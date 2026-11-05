@@ -125,6 +125,44 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 /* ---------- Summary tiles ---------- */
 .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 26px; }
 @media (max-width: 720px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 721px) { .stat.half { grid-column: span 2; } }
+/* cost card */
+.stat.econ { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 18px 32px; padding: 16px 16px 14px; }
+@media (max-width: 720px) { .stat.econ { grid-template-columns: minmax(0, 1fr); } }
+.econ-figs { display: flex; flex-wrap: wrap; gap: 10px 28px; margin-top: 12px; }
+.econ-l { display: flex; align-items: center; gap: 6px; font-size: .8125rem; color: var(--fg-2); }
+.econ-big { font: 700 1.75rem/1.15 var(--font-display); letter-spacing: -0.025em; margin-top: 3px; font-variant-numeric: tabular-nums; }
+.econ-mid { font: 600 1.0625rem/1.3 var(--font-display); letter-spacing: -0.01em; margin-top: 7px; font-variant-numeric: tabular-nums; }
+.lg { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; }
+.lg-spent { background: var(--tint); }
+.lg-spent.over { background: var(--high); }
+.lg-range { background: color-mix(in srgb, var(--tint) 26%, var(--surface)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tint) 40%, transparent); }
+.econ-bar, .er-bar { position: relative; border-radius: 99px; background: var(--fill); overflow: hidden; }
+.econ-bar { height: 14px; margin-top: 16px; }
+.er-bar { display: block; height: 8px; margin-top: 6px; }
+.eb-range { position: absolute; top: 0; bottom: 0; background: color-mix(in srgb, var(--tint) 26%, var(--surface)); border-radius: 99px; }
+.eb-spent { position: absolute; left: 0; top: 0; bottom: 0; background: var(--tint); border-radius: 99px; box-shadow: 2px 0 0 0 var(--surface); }
+.eb-spent.over { background: var(--high); }
+.econ-axis { display: flex; justify-content: space-between; margin-top: 5px; font-size: .75rem; color: var(--fg-2); font-variant-numeric: tabular-nums; }
+.econ-note { margin: 10px 0 0; font-size: .8125rem; color: var(--fg-2); line-height: 1.45; }
+.econ-list { min-width: 0; }
+.econ-warn { display: flex; align-items: center; gap: 7px; margin: 8px 0 0; font-size: .8125rem; color: var(--fg); }
+.econ-lh { display: flex; justify-content: space-between; font-size: .75rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-2); margin: 2px 0 4px; }
+.er { position: relative; display: block; width: 100%; border: 0; background: transparent; text-align: left; padding: 7px 8px; margin: 0 -8px; width: calc(100% + 16px); border-radius: 9px; transition: background .12s ease; }
+@media (hover: hover) { .er:hover { background: var(--fill); } }
+.er:active { background: var(--fill); }
+.er-top { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.er-ic { font-size: .9375rem; text-align: center; }
+.er-t { font-size: .875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.er-v { font-size: .8125rem; color: var(--fg-2); font-variant-numeric: tabular-nums; }
+.er .er-bar { margin-left: 28px; }
+.er-tip {
+  position: absolute; right: 8px; bottom: calc(100% - 6px); z-index: 2; pointer-events: none; white-space: nowrap;
+  background: var(--fg); color: var(--bg); font-size: .75rem; font-weight: 500; padding: 5px 9px; border-radius: 7px;
+  opacity: 0; transform: translateY(3px); transition: opacity .12s ease, transform .12s ease; font-variant-numeric: tabular-nums;
+}
+@media (hover: hover) { .er:hover .er-tip { opacity: 1; transform: none; } }
+.er:focus-visible .er-tip { opacity: 1; transform: none; }
 .stat { background: var(--surface); border-radius: 14px; padding: 14px 14px 13px; box-shadow: var(--shadow); min-width: 0; }
 .stat .k { font-size: .75rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-2); }
 .stat .v { font: 600 1.1875rem/1.2 var(--font-display); letter-spacing: -0.015em; margin-top: 6px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
@@ -977,13 +1015,60 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     const remaining = arr.filter((t) => t.status !== "ferdig");
     const remMin = remaining.reduce((s, t) => s + (num(t.costMin) || 0), 0);
     const remMax = remaining.reduce((s, t) => s + (num(t.costMax) || 0), 0);
-    const tile = (icon, tone, k, v, s, extra = "") => `<div class="stat"><div class="k"><span class="k-ic ${tone}">${ic(icon)}</span>${k}</div><div class="v">${v}</div>${s ? `<div class="s">${s}</div>` : ""}${extra}</div>`;
+    const tile = (icon, tone, k, v, s, extra = "") => `<div class="stat half"><div class="k"><span class="k-ic ${tone}">${ic(icon)}</span>${k}</div><div class="v">${v}</div>${s ? `<div class="s">${s}</div>` : ""}${extra}</div>`;
     $("#stats").innerHTML = S.loaded && arr.length ? [
-      tile("cash", "t-tint", "Estimert totalt", kr(sum("costMin"), sum("costMax")), done ? `Gjenstår ${kr(remMin, remMax)}` : "Alle oppgaver"),
-      tile("wallet", "t-mid", "Brukt hittil", nf.format(spent) + " kr", spent ? "Faktisk kostnad" : "Fyll inn faktisk kostnad"),
+      econCard(arr, sum("costMin"), sum("costMax"), spent, remMin, remMax, done),
       tile("progress", "t-done", "Fremdrift", `${done} av ${arr.length} ferdig`, active ? `${active} pågår` : "", `<div class="progress" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><span style="width:${pct}%"></span></div>`),
       tile("clock", "t-low", "Arbeid", days(sum("daysMin"), sum("daysMax")), "Arbeidsdager totalt"),
     ].join("") : "";
+  }
+
+  // Combined cost card: total spent vs. estimate range, plus a per-task breakdown
+  const kShort = (v) => nfd.format(v / 1000);
+  function econCard(arr, sMin, sMax, spent, remMin, remMax, done) {
+    const scale = Math.max(sMax, spent, 1);
+    const pct = (v) => Math.max(0, Math.min(100, (v / scale) * 100));
+    const over = sMax > 0 && spent > sMax;
+    const share = sMin > 0 && spent > 0 ? Math.round((spent / sMin) * 100) : null;
+    const note = !spent
+      ? "Fyll inn faktisk kostnad i oppgavene for å følge forbruket."
+      : over ? `${nf.format(spent - sMax)} kr over høyeste estimat.` : `${share} % av laveste estimat er brukt.`;
+    const tasks = arr.slice().sort((a, b) => mid(b.costMin, b.costMax) - mid(a.costMin, a.costMax));
+    const overN = arr.filter((t) => { const hi = num(t.costMax) ?? num(t.costMin); return hi && (num(t.actualCost) || 0) > hi; }).length;
+    const tScale = Math.max(1, ...tasks.map((t) => Math.max(num(t.costMax) ?? num(t.costMin) ?? 0, num(t.actualCost) || 0)));
+    const rows = tasks.map((t) => {
+      const lo = num(t.costMin) ?? num(t.costMax) ?? 0, hi = num(t.costMax) ?? lo, a = num(t.actualCost) || 0;
+      const o = hi > 0 && a > hi;
+      const val = lo || hi ? (lo === hi ? kShort(hi) : `${kShort(lo)}–${kShort(hi)}`) : "–";
+      return `<button type="button" class="er" data-open="${esc(t.id)}" aria-label="${esc(t.title)}: estimat ${esc(kr(t.costMin, t.costMax))}, brukt ${nf.format(a)} kr">
+        <span class="er-top"><span class="emoji er-ic" aria-hidden="true">${esc(t.icon)}</span><span class="er-t">${esc(t.title)}</span><span class="er-v">${val}</span></span>
+        <span class="er-bar" aria-hidden="true">
+          ${lo || hi ? `<span class="eb-range" style="left:${(lo / tScale) * 100}%;width:${Math.max(1.2, ((hi - lo) / tScale) * 100)}%"></span>` : ""}
+          ${a ? `<span class="eb-spent${o ? " over" : ""}" style="width:${Math.max(1.5, (a / tScale) * 100)}%"></span>` : ""}
+        </span>
+        <span class="er-tip" aria-hidden="true">Estimat ${esc(kr(t.costMin, t.costMax))} · Brukt ${nf.format(a)} kr</span>
+      </button>`;
+    }).join("");
+    return `<section class="stat econ" aria-label="Økonomi">
+      <div class="econ-sum">
+        <div class="k"><span class="k-ic t-tint">${ic("cash")}</span>Økonomi</div>
+        <div class="econ-figs">
+          <div><div class="econ-l"><i class="lg lg-spent${over ? " over" : ""}"></i>Brukt hittil</div><div class="econ-big">${nf.format(spent)} kr</div></div>
+          <div><div class="econ-l"><i class="lg lg-range"></i>Estimert totalt</div><div class="econ-mid">${kr(sMin, sMax)}</div></div>
+        </div>
+        <div class="econ-bar" role="img" aria-label="Brukt ${nf.format(spent)} kr av estimert ${esc(kr(sMin, sMax))}">
+          <span class="eb-range" style="left:${pct(sMin)}%;width:${Math.max(0, pct(sMax) - pct(sMin))}%"></span>
+          ${spent ? `<span class="eb-spent${over ? " over" : ""}" style="width:${Math.max(1, pct(spent))}%"></span>` : ""}
+        </div>
+        <div class="econ-axis" aria-hidden="true"><span>0 kr</span><span>${nf.format(scale)} kr</span></div>
+        <p class="econ-note">${note}${done ? ` Gjenstår ${kr(remMin, remMax)} for oppgavene som ikke er ferdige.` : ""}</p>
+        ${overN ? `<p class="econ-warn"><i class="lg lg-spent over"></i>${overN} oppgave${overN === 1 ? "" : "r"} har kostet mer enn høyeste estimat</p>` : ""}
+      </div>
+      <div class="econ-list">
+        <div class="econ-lh"><span>Per oppgave</span><span>tusen kr</span></div>
+        ${rows}
+      </div>
+    </section>`;
   }
 
   const IC_PATHS = {
