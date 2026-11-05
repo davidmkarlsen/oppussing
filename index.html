@@ -505,7 +505,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
   position: absolute; left: 0; right: 0; margin-inline: auto; z-index: 4;
   bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   width: min(400px, calc(100% - 28px));
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; padding: 5px;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2px; padding: 5px;
   border-radius: 999px; background: var(--bar);
   -webkit-backdrop-filter: blur(22px) saturate(180%); backdrop-filter: blur(22px) saturate(180%);
   box-shadow: 0 10px 34px rgba(0,0,0,.2), 0 1px 3px rgba(0,0,0,.08), 0 0 0 .5px var(--sep);
@@ -525,6 +525,9 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
   border-radius: 99px; display: grid; place-items: center; font-size: .625rem; font-weight: 700;
   background: var(--tint); color: var(--on-tint); font-variant-numeric: tabular-nums; margin: 0;
 }
+.report-seg { display: grid; width: 100%; margin: 4px 0 16px; }
+.report-seg button { padding: 8px 12px; font-size: .9375rem; }
+.report-seg .count { margin-left: 6px; color: var(--fg-2); font-weight: 500; font-variant-numeric: tabular-nums; }
 .sheet-body { padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px)) !important; }
 /* phones: edit + close float bottom-right beside the tab bar, within thumb reach */
 @media (max-width: 759px) {
@@ -831,9 +834,8 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   <div class="sheet-body" id="sheet-body" role="tabpanel"></div>
   <nav class="tabbar" id="tabs" role="tablist" aria-label="Seksjoner">
     <button type="button" role="tab" data-tab="oversikt">Oversikt</button>
-    <button type="button" role="tab" data-tab="naa">Nå</button>
     <button type="button" role="tab" data-tab="inspo">Inspirasjon</button>
-    <button type="button" role="tab" data-tab="resultat">Resultat</button>
+    <button type="button" role="tab" data-tab="rapport">Rapport</button>
   </nav>
 </section>
 
@@ -1236,7 +1238,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   function openSheet(id, tab = "oversikt") {
     const t = S.tasks.get(id);
     if (!t) return;
-    S.open = id; S.edit = clone(t); S.tab = tab; S.confirmDelete = false; S.photoErr = "";
+    S.open = id; S.edit = clone(t); S.tab = tab; S.reportTab = "naa"; S.confirmDelete = false; S.photoErr = "";
     setIconPop(false);
     S.rngEdit = { cost: false, days: false };
     S.orderEdit = false;
@@ -1266,19 +1268,23 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 
   const tbSvg = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
   const TAB_ICONS = {
+    rapport: tbSvg(`<rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4V3h6v1"/><path d="M8.5 17v-3M12 17v-6M15.5 17v-4.5"/>`),
     oversikt: tbSvg(`<rect x="4.5" y="3.5" width="15" height="17" rx="2.5"/><path d="M8.5 8.5h7M8.5 12h7M8.5 15.5h4"/>`),
     naa: tbSvg(`<path d="M3.5 8.5A2 2 0 0 1 5.5 6.5h2l1.4-2h6.2l1.4 2h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.8" r="3.6"/>`),
     inspo: tbSvg(`<path d="M9 17.5h6M10 20.5h4"/><path d="M12 3.5a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.1v1.1h5v-1.1c0-.8.4-1.6 1.1-2.1A6 6 0 0 0 12 3.5z"/>`),
     resultat: tbSvg(`<path d="M12 3.2l2.2 1.6 2.7-.1.8 2.6 2.2 1.6-.9 2.6.9 2.6-2.2 1.6-.8 2.6-2.7-.1L12 20.8l-2.2-1.6-2.7.1-.8-2.6-2.2-1.6.9-2.6-.9-2.6 2.2-1.6.8-2.6 2.7.1z"/><path d="m8.9 12.2 2.1 2.1 4.1-4.4"/>`),
   };
+  // The "Rapport" tab holds Nå (before) and Resultat (after) as its own sub-tabs
+  const TAB_LABEL = { oversikt: "Oversikt", inspo: "Inspirasjon", rapport: "Rapport" };
+  function curGroup() { return S.tab === "rapport" ? (S.reportTab || "naa") : S.tab; }
   function renderTabs() {
     const e = S.edit;
     document.querySelectorAll("#tabs button").forEach((b) => {
       const k = b.dataset.tab;
       b.setAttribute("aria-selected", String(k === S.tab));
-      const n = GROUPS[k] ? e.groups[k].photos.length : 0;
-      b.innerHTML = `<span class="tb-ic">${TAB_ICONS[k]}${n ? `<span class="count">${n}</span>` : ""}</span><span class="tb-l">${GROUPS[k] ? GROUPS[k].label : "Oversikt"}</span>`;
-      b.setAttribute("aria-label", (GROUPS[k] ? GROUPS[k].label : "Oversikt") + (n ? `, ${n} bilde${n === 1 ? "" : "r"}` : ""));
+      const n = k === "rapport" ? e.groups.naa.photos.length + e.groups.resultat.photos.length : GROUPS[k] ? e.groups[k].photos.length : 0;
+      b.innerHTML = `<span class="tb-ic">${TAB_ICONS[k]}${n ? `<span class="count">${n}</span>` : ""}</span><span class="tb-l">${TAB_LABEL[k]}</span>`;
+      b.setAttribute("aria-label", TAB_LABEL[k] + (n ? `, ${n} bilde${n === 1 ? "" : "r"}` : ""));
     });
   }
 
@@ -1588,11 +1594,16 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
         </div>`;
       updateRangeUI("cost"); updateRangeUI("days");
     } else {
-      const g = S.tab, gr = e.groups[g];
+      const g = curGroup(), gr = e.groups[g];
       const n = S.uploading[g];
+      const rTabs = S.tab === "rapport" ? `<div class="seg report-seg" role="tablist" aria-label="Rapport">${["naa", "resultat"].map((k) => {
+        const c = e.groups[k].photos.length;
+        return `<button type="button" role="tab" data-rtab="${k}" aria-selected="${k === g}">${GROUPS[k].label}${c ? `<span class="count">${c}</span>` : ""}</button>`;
+      }).join("")}</div>` : "";
       const tiles = gr.photos.map((p, i) => `<button type="button" class="ph" data-ph="${i}" aria-label="${esc(p.caption || "Bilde " + (i + 1))}"><img data-path="${esc(p.id)}" alt="${esc(p.caption || "")}" loading="lazy" onerror="this.parentNode.classList.add('broken');this.remove()">${p.caption ? `<span class="cap">${esc(p.caption)}</span>` : ""}</button>`).join("")
         + Array.from({ length: n }, () => `<div class="ph loading"><div class="spinner" aria-label="Laster opp"></div></div>`).join("");
       bodyEl.innerHTML = `
+        ${rTabs}
         ${S.editMode ? `<p class="photo-intro">${GROUPS[g].intro}</p>` : ""}
         <div class="sec">
           ${!S.editMode ? "" : S.assets ? `<label class="upload" for="f-up-${g}">${ICON_CAM}Legg til bilder<input id="f-up-${g}" type="file" accept="image/*" multiple data-upload="${g}"></label>`
@@ -1648,7 +1659,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     const id = S.edit.id;
     S.photoErr = "";
     S.uploading[g] += files.length;
-    if (S.tab === g) renderSheet();
+    if (curGroup() === g) renderSheet();
     for (const file of files) {
       try {
         const { blob, type } = await prepImage(file);
@@ -1664,7 +1675,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
         S.photoErr = UPLOAD_ERR[e && e.code] || "Opplastingen feilet. Prøv igjen.";
       } finally {
         S.uploading[g] = Math.max(0, S.uploading[g] - 1);
-        if (S.edit && S.edit.id === id && S.tab === g) { renderSheet(); }
+        if (S.edit && S.edit.id === id && curGroup() === g) { renderSheet(); }
         else if (S.edit && S.edit.id === id) renderTabs();
       }
     }
@@ -1683,7 +1694,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     S.lb = null;
     const lb = $("#lb"); lb.classList.remove("open");
     setTimeout(() => { if (!S.lb) lb.hidden = true; }, 230);
-    if (S.edit && S.tab === g) renderSheet();
+    if (S.edit && curGroup() === g) renderSheet();
   }
   function renderLb() {
     const { g, i } = S.lb;
@@ -1818,7 +1829,9 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
       return;
     }
     const ph = t.closest("[data-ph]");
-    if (ph && S.edit) return openLb(S.tab, Number(ph.dataset.ph));
+    if (ph && S.edit) return openLb(curGroup(), Number(ph.dataset.ph));
+    const rtab = t.closest("[data-rtab]");
+    if (rtab && S.edit) { if (saveTimer) flushSave(); S.reportTab = rtab.dataset.rtab; S.photoErr = ""; renderSheet(); const b = document.querySelector(`[data-rtab="${S.reportTab}"]`); if (b) b.focus({ preventScroll: true }); return; }
     const lbd = t.closest("[data-lbdel]");
     if (lbd && S.lb) { const a = lbd.dataset.lbdel; if (a === "yes") return deletePhoto(); S.lbConfirm = a === "ask"; return renderLb(); }
   });
