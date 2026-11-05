@@ -155,7 +155,9 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .econ-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
 @media (hover: hover) { .econ-toggle:hover { color: var(--fg); } }
 .stat.econ:not(.is-open) { grid-template-columns: minmax(0, 1fr); }
-.stat.econ:not(.is-open) .econ-list, .stat.econ:not(.is-open) .econ-note, .stat.econ:not(.is-open) .econ-warn { display: none; }
+.stat.econ:not(.is-open) .econ-list, .stat.econ:not(.is-open) .econ-note, .stat.econ:not(.is-open) .econ-warn, .stat.econ:not(.is-open) .econ-figs { display: none; }
+.econ .econ-bar { margin-top: 14px; }
+.econ .econ-figs { margin-top: 14px; }
 .econ-warn { display: flex; align-items: center; gap: 7px; margin: 8px 0 0; font-size: .8125rem; color: var(--fg); }
 .econ-lh { display: flex; justify-content: space-between; font-size: .75rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-2); margin: 2px 0 4px; }
 .er { position: relative; display: block; width: 100%; border: 0; background: transparent; text-align: left; padding: 7px 8px; margin: 0 -8px; width: calc(100% + 16px); border-radius: 9px; transition: background .12s ease; }
@@ -740,7 +742,10 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .fact-k .ic { font-size: 14px; }
 .fact-v { display: block; font-weight: 600; font-size: 1rem; margin-top: 5px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .fact.price-fact { grid-column: 1 / -1; padding: 13px 14px 12px; }
-.price-fact .econ-figs { margin-top: 8px; }
+.price-fact .econ-figs { margin-top: 12px; }
+.fact.price-fact { position: relative; }
+.pf-toggle { top: 8px; right: 8px; width: 30px; height: 30px; }
+.price-fact:not(.is-open) .econ-figs, .price-fact:not(.is-open):not(.no-bar) .pf-note { display: none; }
 .pf-big { font: 700 1.375rem/1.2 var(--font-display); letter-spacing: -0.02em; margin-top: 2px; font-variant-numeric: tabular-nums; }
 .pf-mid { font: 600 1rem/1.3 var(--font-display); margin-top: 5px; font-variant-numeric: tabular-nums; }
 .pf-bar { height: 12px; margin-top: 12px; }
@@ -1127,15 +1132,15 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
       </button>
       <div class="econ-sum">
         <div class="k"><span class="k-ic t-tint">${ic("cash")}</span>Økonomi</div>
-        <div class="econ-figs">
-          <div><div class="econ-l"><i class="lg lg-spent${over ? " over" : ""}"></i>Brukt hittil</div><div class="econ-big">${nf.format(spent)} kr</div></div>
-          <div><div class="econ-l"><i class="lg lg-range"></i>Estimert totalt</div><div class="econ-mid">${kr(sMin, sMax)}</div></div>
-        </div>
         <div class="econ-bar" role="img" aria-label="Brukt ${nf.format(spent)} kr av estimert ${esc(kr(sMin, sMax))}">
           <span class="eb-range" style="left:${pct(sMin)}%;width:${Math.max(0, pct(sMax) - pct(sMin))}%"></span>
           ${spent ? `<span class="eb-spent${over ? " over" : ""}" style="width:${Math.max(1, pct(spent))}%"></span>` : ""}
         </div>
         <div class="econ-axis" aria-hidden="true"><span>0 kr</span><span>${nf.format(scale)} kr</span></div>
+        <div class="econ-figs">
+          <div><div class="econ-l"><i class="lg lg-spent${over ? " over" : ""}"></i>Brukt hittil</div><div class="econ-big">${nf.format(spent)} kr</div></div>
+          <div><div class="econ-l"><i class="lg lg-range"></i>Estimert totalt</div><div class="econ-mid">${kr(sMin, sMax)}</div></div>
+        </div>
         <p class="econ-note">${note}${done ? ` Gjenstår ${kr(remMin, remMax)} for oppgavene som ikke er ferdige.` : ""}</p>
         ${overN ? `<p class="econ-warn"><i class="lg lg-spent over"></i>${overN} oppgave${overN === 1 ? "" : "r"} har kostet mer enn høyeste estimat</p>` : ""}
       </div>
@@ -1300,7 +1305,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   function openSheet(id, tab = "oversikt") {
     const t = S.tasks.get(id);
     if (!t) return;
-    S.open = id; S.edit = clone(t); S.tab = tab; S.reportTab = "naa"; S.linkForm = null; S.confirmDelete = false; S.photoErr = "";
+    S.open = id; S.edit = clone(t); S.tab = tab; S.reportTab = "naa"; S.linkForm = null; S.pfOpen = false; S.confirmDelete = false; S.photoErr = "";
     setIconPop(false);
     S.rngEdit = { cost: false, days: false };
     S.orderEdit = false;
@@ -1600,17 +1605,21 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     else if (over) note = `${nf.format(a - eHi)} kr over høyeste estimat.`;
     else if (a < eLo) note = `${nf.format(eLo - a)} kr under laveste estimat så langt.`;
     else note = "Innenfor estimatet.";
-    return `<div class="fact price-fact">
+    const open = !!S.pfOpen, hasBar = hasEst || a != null;
+    return `<div class="fact price-fact${open ? " is-open" : ""}${hasBar ? "" : " no-bar"}">
       <span class="fact-k">${ic("tag")}Pris</span>
-      <div class="econ-figs">
-        <div><div class="econ-l"><i class="lg lg-spent${over ? " over" : ""}"></i>Brukt</div><div class="pf-big">${a != null ? nf.format(a) + " kr" : "–"}</div></div>
-        <div><div class="econ-l"><i class="lg lg-range"></i>Estimat</div><div class="pf-mid">${esc(kr(e.costMin, e.costMax))}</div></div>
-      </div>
+      <button type="button" class="econ-toggle pf-toggle" data-pf aria-expanded="${open}" aria-label="${open ? "Skjul prisdetaljer" : "Vis prisdetaljer"}">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
       ${hasEst || a != null ? `<div class="pf-wrap"><div class="econ-bar pf-bar" role="img" aria-label="Brukt ${a != null ? nf.format(a) : 0} kr av estimert ${esc(kr(e.costMin, e.costMax))}">
         ${hasEst ? `<span class="eb-range" style="left:${pct(eLo)}%;width:${Math.max(1.5, pct(eHi) - pct(eLo))}%"></span>` : ""}
         ${a ? `<span class="eb-spent${over ? " over" : ""}" style="width:${Math.max(1.5, pct(a))}%"></span>` : ""}
       </div>${over ? `<span class="pf-mark" style="left:${pct(eHi)}%" title="Høyeste estimat"><span>Maks ${nf.format(eHi)} kr</span></span>` : ""}</div>
       <div class="econ-axis" aria-hidden="true"><span>0 kr</span><span>${nf.format(scale)} kr</span></div>` : ""}
+      <div class="econ-figs">
+        <div><div class="econ-l"><i class="lg lg-spent${over ? " over" : ""}"></i>Brukt</div><div class="pf-big">${a != null ? nf.format(a) + " kr" : "–"}</div></div>
+        <div><div class="econ-l"><i class="lg lg-range"></i>Estimat</div><div class="pf-mid">${esc(kr(e.costMin, e.costMax))}</div></div>
+      </div>
       <span class="fact-s pf-note">${note}</span>
     </div>`;
   }
@@ -1910,6 +1919,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   // ---------- events ----------
   document.addEventListener("click", (ev) => {
     const t = ev.target;
+    if (t.closest("[data-pf]") && S.edit) { S.pfOpen = !S.pfOpen; renderSheet(); const b = $("[data-pf]"); if (b) b.focus({ preventScroll: true }); return; }
     if (t.closest("[data-econ]")) { S.econOpen = !S.econOpen; renderStats(); const b = $("[data-econ]"); if (b) b.focus({ preventScroll: true }); return; }
     const open = t.closest("[data-open]");
     if (open) return openSheet(open.dataset.open);
