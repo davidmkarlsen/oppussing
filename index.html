@@ -1007,10 +1007,20 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     clearTimeout(saveTimer);
     saveTimer = setTimeout(flushSave, 550);
   }
+  function isBlankTask(t) {
+    const txt = (v) => typeof v === "string" && v.trim() !== "";
+    if (txt(t.title) || txt(t.description) || txt(t.notes) || txt(t.dependsOn)) return false;
+    if (["costMin", "costMax", "daysMin", "daysMax", "actualCost"].some((k) => t[k] != null)) return false;
+    return !Object.values(t.groups).some((g) => g.photos.length || txt(g.notes));
+  }
   function flushSave() {
     clearTimeout(saveTimer); saveTimer = null;
     if (!S.edit) return;
     S.tasks.set(S.edit.id, clone(S.edit));
+    if (S.draftId === S.edit.id) {
+      if (isBlankTask(S.edit)) { setSave(""); return; }
+      S.draftId = null;
+    }
     persist(S.edit.id, body(S.edit));
   }
 
@@ -1035,6 +1045,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     if (!S.open) return;
     if (saveTimer) flushSave();
     const id = S.open;
+    if (S.draftId === id) { S.tasks.delete(id); S.draftId = null; }
     S.open = null; S.edit = null;
     const sheet = $("#sheet"), scrim = $("#scrim");
     sheet.classList.remove("open"); scrim.classList.remove("open");
@@ -1258,7 +1269,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 
   function setSheetTitle() {
     const e = S.edit;
-    $("#sheet-title").textContent = e.title || "Uten navn";
+    $("#sheet-title").textContent = e.title || (S.draftId === e.id ? "Ny oppgave" : "Uten navn");
     $("#icon-cur").textContent = e.icon;
   }
   function setIconPop(open) {
@@ -1333,7 +1344,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
       bodyEl.innerHTML = `
         <div class="sec">
           <div class="cells">
-            <label class="cell stack" for="f-title"><span class="cell-label lbl-ic">${ic("title")}Tittel</span><input id="f-title" type="text" data-k="title" value="${esc(e.title)}" autocomplete="off"></label>
+            <label class="cell stack" for="f-title"><span class="cell-label lbl-ic">${ic("title")}Tittel</span><input id="f-title" type="text" data-k="title" value="${esc(e.title)}" placeholder="Hva skal gjøres?" autocomplete="off"></label>
             <label class="cell stack" for="f-description"><span class="cell-label lbl-ic">${ic("text")}Beskrivelse</span><textarea id="f-description" data-k="description" rows="4">${esc(e.description)}</textarea></label>
           </div>
         </div>
@@ -1516,10 +1527,11 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     if (!S.db) return;
     const ref = S.db.collection("tasks").doc();
     const maxOrder = Math.max(0, ...[...S.tasks.values()].map((t) => t.order).filter((n) => n < 99));
-    const t = normalize(ref.id, { title: "Ny oppgave", icon: DEFAULT_ICON, priority: "middels", status: "ikke-startet", doneBy: "selv", order: maxOrder + 1, createdAt: new Date().toISOString() });
+    const t = normalize(ref.id, { icon: DEFAULT_ICON, priority: "middels", status: "ikke-startet", doneBy: "selv", order: maxOrder + 1, createdAt: new Date().toISOString() });
+    t.title = "";
+    // A new task is only a draft until something is typed in; it isn't saved before that.
+    S.draftId = t.id;
     S.tasks.set(t.id, t);
-    persist(t.id, body(t));
-    renderList();
     openSheet(t.id);
     setEditMode(true);
     setTimeout(() => { const f = $("#f-title"); if (f) { f.focus(); f.select(); } }, 460);
