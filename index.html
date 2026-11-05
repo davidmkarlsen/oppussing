@@ -104,8 +104,11 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 }
 .topbar.scrolled { border-bottom-color: var(--sep); }
 .topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 10px; min-height: 52px; }
-.topbar .mini { font-weight: 600; font-size: 1.0625rem; opacity: 0; transform: translateY(4px); transition: opacity .2s ease, transform .2s ease; }
-.topbar.scrolled .mini { opacity: 1; transform: none; }
+.topbar .mini { font-weight: 600; font-size: 1.0625rem; position: relative; display: grid; }
+.topbar .mini > span { grid-area: 1 / 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: opacity .2s ease, transform .2s ease; }
+.topbar .mini .m-proj { opacity: 0; transform: translateY(6px); }
+.topbar.scrolled .mini .m-home { opacity: 0; transform: translateY(-6px); }
+.topbar.scrolled .mini .m-proj { opacity: 1; transform: none; }
 .add-btn {
   display: inline-flex; align-items: center; gap: 6px;
   border: 0; border-radius: 999px; padding: 8px 14px;
@@ -115,7 +118,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .add-btn:active { transform: scale(.96); opacity: .85; }
 .add-btn svg { width: 16px; height: 16px; }
 
-.hero { padding-block: 4px 18px; }
+.hero { padding-block: 28px 20px; }
 .hero h1 {
   font: 700 clamp(2rem, 6vw, 2.5rem)/1.08 var(--font-display);
   letter-spacing: -0.025em; margin: 0; text-wrap: balance;
@@ -840,7 +843,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 
 <header class="topbar" id="topbar">
   <div class="wrap">
-    <span class="mini" id="mini-title">Oppussing 1. etasje</span>
+    <span class="mini"><span class="m-home">Villa el mansion</span><span class="m-proj" id="mini-title" aria-hidden="true">Oppussing 1. etasje</span></span>
     <div class="top-actions">
     <button class="signout" id="signout" type="button" hidden>Logg ut</button>
     </div>
@@ -849,7 +852,6 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 
 <main class="wrap" id="app">
   <section class="hero">
-    <p class="eyebrow">Villa el mansion</p>
     <div class="proj-wrap">
       <h1><button type="button" class="proj-btn" id="proj-btn" aria-haspopup="true" aria-expanded="false" aria-controls="proj-menu"><span id="proj-title">Oppussing 1. etasje</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></h1>
       <div class="sort-menu proj-menu" id="proj-menu" role="group" aria-label="Prosjekter" hidden></div>
