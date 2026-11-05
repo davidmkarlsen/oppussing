@@ -423,8 +423,33 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .save-state.err { color: var(--high); }
 .text-btn { border: 0; background: transparent; color: var(--tint); font-weight: 600; font-size: 1.0625rem; padding: 4px 2px; }
 .text-btn:active { opacity: .5; }
-.sheet .tabs-wrap { padding: 0 16px 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-.sheet .tabs-wrap .seg button { padding-inline: 8px; }
+/* floating tab bar at the bottom of the task sheet */
+.tabbar {
+  position: absolute; left: 0; right: 0; margin-inline: auto; z-index: 4;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  width: min(400px, calc(100% - 28px));
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; padding: 5px;
+  border-radius: 999px; background: var(--bar);
+  -webkit-backdrop-filter: blur(22px) saturate(180%); backdrop-filter: blur(22px) saturate(180%);
+  box-shadow: 0 10px 34px rgba(0,0,0,.2), 0 1px 3px rgba(0,0,0,.08), 0 0 0 .5px var(--sep);
+}
+.tabbar button {
+  display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0;
+  border: 0; background: transparent; border-radius: 999px; padding: 7px 2px 6px;
+  color: var(--fg-2); transition: background .18s ease, color .18s ease, transform .1s ease-out;
+}
+.tabbar button:active { transform: scale(.94); }
+.tabbar button[aria-selected="true"] { color: var(--tint); background: var(--tint-soft); }
+.tb-ic { position: relative; display: grid; place-items: center; }
+.tb-ic svg { width: 22px; height: 22px; }
+.tb-l { font-size: .6875rem; font-weight: 600; letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.tabbar .count {
+  position: absolute; top: -4px; left: calc(100% - 6px); min-width: 16px; height: 16px; padding: 0 4px;
+  border-radius: 99px; display: grid; place-items: center; font-size: .625rem; font-weight: 700;
+  background: var(--tint); color: var(--on-tint); font-variant-numeric: tabular-nums; margin: 0;
+}
+.sheet-body { padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px)) !important; }
+@media (prefers-reduced-transparency: reduce) { .tabbar { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; } }
 .sheet-body {
   flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
   padding: 4px 16px calc(28px + env(safe-area-inset-bottom, 0px));
@@ -654,15 +679,13 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
       <label class="cell" for="f-icon"><span class="cell-label">Egen emoji</span><span class="cell-input"><input id="f-icon" type="text" data-k="icon" maxlength="8" autocomplete="off" class="emoji" style="text-align:right;width:5ch;font-size:1.375rem"></span></label>
     </div>
   </div>
-  <div class="tabs-wrap">
-    <div class="seg" id="tabs" role="tablist" aria-label="Seksjoner">
-      <button type="button" role="tab" data-tab="oversikt">Oversikt</button>
-      <button type="button" role="tab" data-tab="naa">Nå</button>
-      <button type="button" role="tab" data-tab="inspo">Inspirasjon</button>
-      <button type="button" role="tab" data-tab="resultat">Resultat</button>
-    </div>
-  </div>
   <div class="sheet-body" id="sheet-body" role="tabpanel"></div>
+  <nav class="tabbar" id="tabs" role="tablist" aria-label="Seksjoner">
+    <button type="button" role="tab" data-tab="oversikt">Oversikt</button>
+    <button type="button" role="tab" data-tab="naa">Nå</button>
+    <button type="button" role="tab" data-tab="inspo">Inspirasjon</button>
+    <button type="button" role="tab" data-tab="resultat">Resultat</button>
+  </nav>
 </section>
 
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Bilde">
@@ -946,13 +969,21 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
     if (row) row.focus({ preventScroll: true });
   }
 
+  const tbSvg = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const TAB_ICONS = {
+    oversikt: tbSvg(`<rect x="4.5" y="3.5" width="15" height="17" rx="2.5"/><path d="M8.5 8.5h7M8.5 12h7M8.5 15.5h4"/>`),
+    naa: tbSvg(`<path d="M3.5 8.5A2 2 0 0 1 5.5 6.5h2l1.4-2h6.2l1.4 2h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.8" r="3.6"/>`),
+    inspo: tbSvg(`<path d="M9 17.5h6M10 20.5h4"/><path d="M12 3.5a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.1v1.1h5v-1.1c0-.8.4-1.6 1.1-2.1A6 6 0 0 0 12 3.5z"/>`),
+    resultat: tbSvg(`<path d="M12 3.2l2.2 1.6 2.7-.1.8 2.6 2.2 1.6-.9 2.6.9 2.6-2.2 1.6-.8 2.6-2.7-.1L12 20.8l-2.2-1.6-2.7.1-.8-2.6-2.2-1.6.9-2.6-.9-2.6 2.2-1.6.8-2.6 2.7.1z"/><path d="m8.9 12.2 2.1 2.1 4.1-4.4"/>`),
+  };
   function renderTabs() {
     const e = S.edit;
     document.querySelectorAll("#tabs button").forEach((b) => {
       const k = b.dataset.tab;
       b.setAttribute("aria-selected", String(k === S.tab));
       const n = GROUPS[k] ? e.groups[k].photos.length : 0;
-      b.innerHTML = (GROUPS[k] ? GROUPS[k].label : "Oversikt") + (n ? `<span class="count">${n}</span>` : "");
+      b.innerHTML = `<span class="tb-ic">${TAB_ICONS[k]}${n ? `<span class="count">${n}</span>` : ""}</span><span class="tb-l">${GROUPS[k] ? GROUPS[k].label : "Oversikt"}</span>`;
+      b.setAttribute("aria-label", (GROUPS[k] ? GROUPS[k].label : "Oversikt") + (n ? `, ${n} bilde${n === 1 ? "" : "r"}` : ""));
     });
   }
 
