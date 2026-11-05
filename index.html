@@ -528,6 +528,36 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 @media (prefers-reduced-transparency: reduce) {
   .topbar { background: var(--bg); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
+/* sheet: read view + edit toggle */
+.head-actions { display: flex; align-items: center; gap: 8px; }
+.round-btn {
+  width: 34px; height: 34px; border-radius: 50%; border: 0; padding: 0; flex: none;
+  display: grid; place-items: center; background: var(--fill); color: var(--fg-2);
+  transition: background .15s ease, color .15s ease, transform .1s ease-out;
+}
+.round-btn svg { width: 15px; height: 15px; }
+.round-btn:active { transform: scale(.9); }
+@media (hover: hover) { .round-btn:hover { color: var(--fg); } }
+.round-btn[aria-pressed="true"] { background: var(--tint); color: var(--on-tint); }
+.sheet:not(.is-editing) .icon-btn { cursor: default; }
+.sheet:not(.is-editing) .icon-btn .pencil { display: none; }
+.sheet:not(.is-editing) .icon-btn:active { transform: none; }
+.view-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 2px 16px; }
+.view-chips .chip { font-size: .8125rem; padding: 4px 10px; }
+.view-desc { font-size: 1.0625rem; line-height: 1.55; margin: 0 4px 22px; white-space: pre-wrap; overflow-wrap: anywhere; max-width: 65ch; }
+.view-desc.muted, .view-card .muted { color: var(--fg-2); }
+.facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 24px; }
+.fact { background: var(--surface); border-radius: 12px; padding: 12px 14px; min-width: 0; }
+.fact-k { display: flex; align-items: center; gap: 6px; font-size: .8125rem; color: var(--fg-2); }
+.fact-k .ic { font-size: 14px; }
+.fact-v { display: block; font-weight: 600; font-size: 1rem; margin-top: 5px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.fact-s { display: block; font-size: .8125rem; color: var(--fg-2); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.view-block { margin-bottom: 22px; }
+.view-card { background: var(--surface); border-radius: 12px; padding: 13px 16px; font-size: .9375rem; line-height: 1.5; }
+.view-card p { margin: 0; overflow-wrap: anywhere; }
+.view-card p + p { margin-top: 8px; }
+.view-card a { color: var(--tint); }
+.pre { white-space: pre-wrap; }
 /* login */
 .auth { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px)); }
 .auth-card { width: min(400px, 100%); background: var(--surface); border-radius: 18px; padding: 28px 22px 22px; box-shadow: var(--shadow); text-align: center; }
@@ -613,7 +643,10 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
       <h2 id="sheet-title">Oppgave</h2>
       <p class="save-state" id="save-state" aria-live="polite"></p>
     </div>
-    <button type="button" class="text-btn" id="sheet-close">Ferdig</button>
+    <div class="head-actions">
+      <button type="button" class="round-btn" id="edit-toggle" aria-pressed="false" aria-label="Rediger oppgave"></button>
+      <button type="button" class="round-btn" id="sheet-close" aria-label="Lukk"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button>
+    </div>
   </div>
   <div class="icon-pop" id="icon-pop" hidden>
     <div class="cells">
@@ -787,6 +820,8 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
     cash: `<rect x="1.7" y="4" width="12.6" height="8" rx="1.3"/><circle cx="8" cy="8" r="1.9"/><path d="M4.3 6.4v3.2M11.7 6.4v3.2"/>`,
     wallet: `<path d="M12 4.8V3.6a.9.9 0 0 0-1.1-.9L3.3 4.5a1 1 0 0 0-.8 1v6.7a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V5.8a1 1 0 0 0-1-1H3.5"/><path d="M10.6 9.1h1.2"/>`,
     progress: `<circle cx="8" cy="8" r="5.8"/><path d="m5.4 8.2 1.8 1.8 3.4-3.7"/>`,
+    person: `<circle cx="8" cy="5.4" r="2.6"/><path d="M2.8 13.6c.7-2.5 2.7-3.9 5.2-3.9s4.5 1.4 5.2 3.9"/>`,
+    steps: `<path d="M6.2 4h7.3M6.2 8h7.3M6.2 12h7.3"/><circle cx="3" cy="4" r=".6" fill="currentColor"/><circle cx="3" cy="8" r=".6" fill="currentColor"/><circle cx="3" cy="12" r=".6" fill="currentColor"/>`,
   };
   const ic = (name) => `<svg class="ic" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC_PATHS[name]}</svg>`;
   const ICON_CHECK =`<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -888,6 +923,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
     setIconPop(false);
     S.rngEdit = { cost: false, days: false };
     S.orderEdit = false;
+    setEditMode(false, true);
     const sheet = $("#sheet"), scrim = $("#scrim");
     sheet.hidden = false; scrim.hidden = false;
     document.documentElement.style.overflow = "hidden";
@@ -1132,12 +1168,63 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
     const list = ICONS.includes(cur) ? ICONS : [cur, ...ICONS];
     return list.map((ic) => `<button type="button" class="emoji" data-icon="${esc(ic)}" aria-pressed="${ic === cur}" aria-label="Ikon ${esc(ic)}">${esc(ic)}</button>`).join("");
   }
+  const SVG_EDIT = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10.6 2.6a1.6 1.6 0 0 1 2.3 0l.5.5a1.6 1.6 0 0 1 0 2.3L6 12.8l-3.2.8.8-3.2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+  const SVG_DONE = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5 6.5 12 13 4.5" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  function setEditMode(on, silent = false) {
+    if (!on && S.editMode) {
+      const pending = document.querySelector("#sheet-body .num-edit");
+      if (pending) commitNum(pending);
+      if (saveTimer) flushSave();
+    }
+    S.editMode = on;
+    if (!on) { setIconPop(false); S.rngEdit = { cost: false, days: false }; S.orderEdit = false; S.confirmDelete = false; }
+    const b = $("#edit-toggle");
+    b.setAttribute("aria-pressed", String(on));
+    b.setAttribute("aria-label", on ? "Ferdig med å redigere" : "Rediger oppgave");
+    b.innerHTML = on ? SVG_DONE : SVG_EDIT;
+    $("#sheet").classList.toggle("is-editing", on);
+    $("#icon-btn").tabIndex = on ? 0 : -1;
+    if (!on) setSave("");
+    if (!silent && S.edit) { renderSheet(); $("#sheet-body").scrollTop = 0; }
+  }
+  function linkify(text) {
+    return esc(text).replace(/https?:\/\/[^\s<]+/g, (u) => `<a href="${u}" target="_blank" rel="noopener">${u.length > 48 ? u.slice(0, 45) + "…" : u}</a>`);
+  }
+  function viewHtml() {
+    const e = S.edit, st = STATUS_MAP[e.status];
+    const list = orderList();
+    const pos = list.findIndex((t) => t.id === e.id) + 1;
+    const prev = list[pos - 2];
+    const doneBy = (DONE_BY.find(([k]) => k === e.doneBy) || [, ""])[1];
+    const fact = (icon, label, value, sub = "") => `<div class="fact"><span class="fact-k">${ic(icon)}${label}</span><span class="fact-v">${value}</span>${sub ? `<span class="fact-s">${sub}</span>` : ""}</div>`;
+    const spent = num(e.actualCost);
+    return `
+      <div class="view-chips">
+        <span class="chip ${e.priority}">${PRIO[e.priority].label} prioritet</span>
+        <span class="chip ${st.cls}">${st.label}</span>
+        ${e.requiresPro ? `<span class="chip pro">${ICON_PRO}Fagperson</span>` : ""}
+      </div>
+      ${e.description ? `<p class="view-desc">${esc(e.description)}</p>` : `<p class="view-desc muted">Ingen beskrivelse ennå. Trykk på blyanten for å legge til.</p>`}
+      <div class="facts">
+        ${fact("tag", "Pris", esc(kr(e.costMin, e.costMax)), spent != null ? `Brukt ${nf.format(spent)} kr` : "")}
+        ${fact("clock", "Arbeid", esc(days(e.daysMin, e.daysMax) || "Ikke estimert"))}
+        ${fact("person", "Utføres av", esc(doneBy))}
+        ${fact("steps", "Rekkefølge", `Steg ${pos} av ${list.length}`)}
+      </div>
+      ${prev || e.dependsOn ? `<div class="view-block"><h3 class="sec-title">Før og etter</h3><div class="view-card">
+        ${prev ? `<p>Kommer etter <span class="emoji">${esc(prev.icon)}</span> ${esc(prev.title)}</p>` : `<p>Første jobb i planen</p>`}
+        ${e.dependsOn ? `<p class="muted">${esc(e.dependsOn)}</p>` : ""}
+      </div></div>` : ""}
+      ${e.notes ? `<div class="view-block"><h3 class="sec-title">Notater</h3><div class="view-card"><p class="pre">${linkify(e.notes)}</p></div></div>` : ""}`;
+  }
   function renderSheet() {
     const e = S.edit;
     setSheetTitle();
     renderTabs();
     const bodyEl = $("#sheet-body");
-    if (S.tab === "oversikt") {
+    if (S.tab === "oversikt" && !S.editMode) {
+      bodyEl.innerHTML = viewHtml();
+    } else if (S.tab === "oversikt") {
       bodyEl.innerHTML = `
         <div class="sec">
           <div class="cells">
@@ -1183,17 +1270,17 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
       const tiles = gr.photos.map((p, i) => `<button type="button" class="ph" data-ph="${i}" aria-label="${esc(p.caption || "Bilde " + (i + 1))}"><img data-path="${esc(p.id)}" alt="${esc(p.caption || "")}" loading="lazy" onerror="this.parentNode.classList.add('broken');this.remove()">${p.caption ? `<span class="cap">${esc(p.caption)}</span>` : ""}</button>`).join("")
         + Array.from({ length: n }, () => `<div class="ph loading"><div class="spinner" aria-label="Laster opp"></div></div>`).join("");
       bodyEl.innerHTML = `
-        <p class="photo-intro">${GROUPS[g].intro}</p>
+        ${S.editMode ? `<p class="photo-intro">${GROUPS[g].intro}</p>` : ""}
         <div class="sec">
-          ${S.assets ? `<label class="upload" for="f-up-${g}">${ICON_CAM}Legg til bilder<input id="f-up-${g}" type="file" accept="image/*" multiple data-upload="${g}"></label>`
+          ${!S.editMode ? "" : S.assets ? `<label class="upload" for="f-up-${g}">${ICON_CAM}Legg til bilder<input id="f-up-${g}" type="file" accept="image/*" multiple data-upload="${g}"></label>`
             : `<p class="sec-note" style="margin:0 4px">Logg inn for å laste opp bilder.</p>`}
           ${S.photoErr ? `<p class="err-msg" role="alert">${esc(S.photoErr)}</p>` : ""}
-          ${tiles ? `<div class="grid">${tiles}</div>` : `<div class="empty-photos">Ingen bilder i «${GROUPS[g].label}» ennå.</div>`}
+          ${tiles ? `<div class="grid">${tiles}</div>` : `<div class="empty-photos">Ingen bilder i «${GROUPS[g].label}» ennå.${S.editMode ? "" : " Trykk på blyanten for å legge til."}</div>`}
         </div>
-        <div class="sec">
+        ${S.editMode ? `<div class="sec">
           <h3 class="sec-title">Notater · ${GROUPS[g].label}</h3>
           <div class="cells"><label class="cell stack" for="f-gnotes-${g}"><span class="cell-label">${g === "inspo" ? "Lenker og ideer" : g === "naa" ? "Tilstand, mål og funn" : "Hva ble gjort, materialer, garanti"}</span><textarea id="f-gnotes-${g}" data-k="groups.${g}.notes" rows="5">${esc(gr.notes)}</textarea></label></div>
-        </div>`;
+        </div>` : gr.notes ? `<div class="view-block"><h3 class="sec-title">Notater</h3><div class="view-card"><p class="pre">${linkify(gr.notes)}</p></div></div>` : ""}`;
       hydrateImages(bodyEl);
     }
   }
@@ -1287,12 +1374,15 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
     $("#lb-pos").textContent = `${GROUPS[g].label} · ${i + 1} av ${photos.length}`;
     const cap = $("#lb-cap");
     if (document.activeElement !== cap) cap.value = p.caption || "";
+    cap.readOnly = !S.editMode;
+    cap.hidden = !S.editMode && !p.caption;
+    cap.placeholder = S.editMode ? "Legg til bildetekst, f.eks. «Fuktmerke bak kjøleskap»" : "";
     $("#lb-prev").hidden = i === 0;
     $("#lb-next").hidden = i >= photos.length - 1;
     const added = p.addedAt ? new Date(p.addedAt).toLocaleDateString("nb-NO", { day: "numeric", month: "short", year: "numeric" }) : "";
     $("#lb-actions").innerHTML = S.lbConfirm
       ? `<div class="confirm" style="width:100%"><p>Slette bildet? Det kan ikke angres.</p><div class="btns"><button type="button" class="btn" data-lbdel="cancel">Avbryt</button><button type="button" class="btn red" data-lbdel="yes">Slett bilde</button></div></div>`
-      : `<span class="pos">${added ? "Lagt til " + added : ""}</span>${S.assets ? `<button type="button" class="del" data-lbdel="ask">Slett bilde</button>` : ""}`;
+      : `<span class="pos">${added ? "Lagt til " + added : ""}</span>${S.assets && S.editMode ? `<button type="button" class="del" data-lbdel="ask">Slett bilde</button>` : ""}`;
   }
   async function deletePhoto() {
     const { g, i } = S.lb;
@@ -1328,6 +1418,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
     persist(t.id, body(t));
     renderList();
     openSheet(t.id);
+    setEditMode(true);
     setTimeout(() => { const f = $("#f-title"); if (f) { f.focus(); f.select(); } }, 460);
   }
 
@@ -1343,7 +1434,8 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
     if (!$("#sort-menu").hidden && !t.closest("#sort-menu")) setSortMenu(false);
     const tab = t.closest("#tabs button");
     if (tab && S.edit) { if (saveTimer) flushSave(); S.tab = tab.dataset.tab; S.photoErr = ""; renderSheet(); $("#sheet-body").scrollTop = 0; return; }
-    if (t.closest("#icon-btn") && S.edit) return setIconPop(!S.iconOpen);
+    if (t.closest("#icon-btn") && S.edit) return S.editMode ? setIconPop(!S.iconOpen) : undefined;
+    if (t.closest("#edit-toggle") && S.edit) return setEditMode(!S.editMode);
     if (t.closest("[data-ordertoggle]") && S.edit) {
       S.orderEdit = !S.orderEdit;
       rerenderOrder();
