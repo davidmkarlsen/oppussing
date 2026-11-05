@@ -231,7 +231,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .sort-btn:active { transform: scale(.96); }
 .sort-btn[aria-expanded="true"] { background: var(--tint-soft); }
 .sort-menu {
-  position: absolute; right: 0; top: calc(100% + 6px); z-index: 15; width: max-content; min-width: 250px; max-width: calc(100vw - 32px);
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 31; width: max-content; min-width: 250px; max-width: calc(100vw - 32px);
   background: var(--menu); border-radius: 14px; padding: 6px;
   box-shadow: 0 14px 40px rgba(0,0,0,.18), 0 2px 6px rgba(0,0,0,.08), 0 0 0 .5px var(--sep);
   transform-origin: top right; opacity: 0; transform: scale(.94) translateY(-4px);
@@ -669,6 +669,8 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .top-actions { display: flex; align-items: center; gap: 14px; flex: none; }
 .topbar .mini { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .add-btn, .signout { white-space: nowrap; }
+/* invisible layer behind open dropdowns: blocks clicks on the page and closes the menu */
+.menu-backdrop { position: fixed; inset: 0; z-index: 30; background: transparent; -webkit-tap-highlight-color: transparent; }
 /* floating "new task" button, bottom right */
 .fab {
   position: fixed; z-index: 15;
@@ -745,6 +747,8 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     <p class="footnote">Prisene er grove estimater (inkl. mva.) basert på typiske norske priser og antakelser om ca. 70 m² gulv og 130–160 m² veggflate i 1. etasje. Juster tallene når du har målt opp og fått tilbud. Bare e-postadresser i tilgangslisten kan se og endre planen.</p>
   </section>
 </main>
+
+<div class="menu-backdrop" id="menu-backdrop" hidden></div>
 
 <button class="fab" id="add-top" type="button" aria-label="Ny oppgave" hidden>
   <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
@@ -1870,12 +1874,25 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     else if (!e.shiftKey && document.activeElement === b) { e.preventDefault(); a.focus(); }
   });
 
+  function syncBackdrop() {
+    const open = $("#filter-btn").getAttribute("aria-expanded") === "true" || $("#sort-btn").getAttribute("aria-expanded") === "true";
+    $("#menu-backdrop").hidden = !open;
+  }
+  $("#menu-backdrop").addEventListener("click", (e) => {
+    e.preventDefault(); e.stopPropagation();
+    if ($("#filter-btn").getAttribute("aria-expanded") === "true") { setFilterMenu(false); $("#filter-btn").focus({ preventScroll: true }); }
+    if ($("#sort-btn").getAttribute("aria-expanded") === "true") { setSortMenu(false); $("#sort-btn").focus({ preventScroll: true }); }
+  });
+  $("#menu-backdrop").addEventListener("wheel", (e) => e.preventDefault(), { passive: false });
+  $("#menu-backdrop").addEventListener("touchmove", (e) => e.preventDefault(), { passive: false });
+
   // filter dropdown
   let filterCloseT = null;
   function setFilterMenu(open) {
     const m = $("#filter-menu"), b = $("#filter-btn");
     clearTimeout(filterCloseT);
     b.setAttribute("aria-expanded", String(open));
+    syncBackdrop();
     if (open) {
       setSortMenu(false);
       m.hidden = false;
@@ -1893,6 +1910,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     const m = $("#sort-menu"), b = $("#sort-btn");
     clearTimeout(sortCloseT);
     b.setAttribute("aria-expanded", String(open));
+    syncBackdrop();
     if (open) {
       if (!$("#filter-menu").hidden) setFilterMenu(false);
       m.hidden = false;
