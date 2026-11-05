@@ -365,12 +365,11 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .row .chev { color: var(--fg-3); width: 8px; margin-left: 6px; vertical-align: -1px; }
 .row.is-done .t { color: var(--fg-2); }
 @media (max-width: 520px) {
-  .row { grid-template-columns: auto minmax(0, 1fr); }
-  .row .right { grid-column: 2; text-align: left; display: flex; gap: 10px; align-items: baseline; padding-top: 0; }
+  .row { grid-template-columns: minmax(0, 1fr); gap: 10px; padding-block: 16px; }
+  .row + .row::before { left: 16px; }
+  .row .right { grid-column: 1; text-align: left; display: flex; gap: 12px; align-items: baseline; padding-top: 0; }
   .row .chev { display: none; }
 }
-.range { position: relative; height: 4px; border-radius: 99px; background: var(--fill); margin-top: 10px; }
-.range span { position: absolute; top: 0; bottom: 0; border-radius: 99px; background: color-mix(in srgb, var(--tint) 70%, transparent); min-width: 4px; }
 
 .chip { display: inline-flex; align-items: center; gap: 5px; font-size: .75rem; font-weight: 600; padding: 3px 8px; border-radius: 99px; background: var(--fill); color: var(--fg-2); white-space: nowrap; }
 .chip.hoy { background: var(--high-soft); color: var(--high); }
@@ -812,7 +811,6 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
       el.innerHTML = `<div class="group state"><h3>Ingen oppgaver ennå</h3><p>Legg til den første jobben du vil gjøre i 1. etasje. Hver oppgave får beskrivelse, pris, tidsbruk og egne bildemapper.</p>${S.db ? `<button class="add-btn" type="button" data-add>Ny oppgave</button>` : ""}</div>`;
       return;
     }
-    const maxCost = Math.max(1, ...arr.map((t) => num(t.costMax) ?? num(t.costMin) ?? 0));
     el.innerHTML = `<div class="group">` + arr.map((t) => {
       const st = STATUS_MAP[t.status];
       const photos = Object.values(t.groups).reduce((s, g) => s + g.photos.length, 0);
@@ -821,8 +819,6 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
       if (done) badge = `<span class="badge ok" aria-label="Ferdig">${ICON_CHECK}</span>`;
       else if (S.sort === "order") badge = `<span class="badge" aria-label="Steg ${t.order}">${t.order}</span>`;
       const lead = `<span class="lead icon ${t.priority}"><span class="emoji" aria-hidden="true">${esc(t.icon)}</span>${badge}</span>`;
-      const lo = num(t.costMin) ?? num(t.costMax) ?? 0, hi = num(t.costMax) ?? lo;
-      const range = (lo || hi) ? `<div class="range" aria-hidden="true"><span style="left:${(lo / maxCost) * 100}%;width:${Math.max(0, ((hi - lo) / maxCost) * 100)}%"></span></div>` : "";
       return `<button type="button" class="row${done ? " is-done" : ""}" data-open="${esc(t.id)}">
         ${lead}
         <span class="main">
@@ -834,7 +830,6 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
             ${t.requiresPro ? `<span class="chip pro">${ICON_PRO}Fagperson</span>` : ""}
             ${photos ? `<span class="chip ph">${ICON_CAM}${photos}</span>` : ""}
           </span>
-          ${range}
         </span>
         <span class="right">
           <span class="price">${ic("tag")}${kr(t.costMin, t.costMax)}<svg class="chev" viewBox="0 0 8 14" aria-hidden="true"><path d="m1.5 1.5 5 5.5-5 5.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
