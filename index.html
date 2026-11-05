@@ -454,16 +454,15 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .sheet-body { padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px)) !important; }
 /* phones: edit + close float bottom-right beside the tab bar, within thumb reach */
 @media (max-width: 759px) {
-  .tabbar { left: 12px; right: auto; margin: 0; width: calc(100% - 24px - 112px); }
+  .tabbar { left: 12px; right: auto; margin: 0; width: calc(100% - 24px - 66px); }
   .tabbar button { padding-inline: 0; }
-  .tb-l { font-size: .65rem; letter-spacing: -0.01em; }
   .head-actions {
     position: absolute; z-index: 5; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-    gap: 4px; padding: 5px; border-radius: 999px; background: var(--bar);
+    flex-direction: column; gap: 6px; padding: 6px; border-radius: 999px; background: var(--bar);
     -webkit-backdrop-filter: blur(22px) saturate(180%); backdrop-filter: blur(22px) saturate(180%);
     box-shadow: 0 10px 34px rgba(0,0,0,.2), 0 1px 3px rgba(0,0,0,.08), 0 0 0 .5px var(--sep);
   }
-  .head-actions .round-btn { width: 46px; height: 52px; border-radius: 999px; background: transparent; color: var(--fg); }
+  .head-actions .round-btn { width: 46px; height: 46px; border-radius: 50%; background: transparent; color: var(--fg); }
   .head-actions .round-btn svg { width: 19px; height: 19px; }
   .head-actions .round-btn[aria-pressed="true"] { background: var(--tint); color: var(--on-tint); }
 }
