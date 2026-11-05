@@ -240,6 +240,8 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 @media (max-width: 520px) { .row .price, .row .days { justify-content: flex-start; } }
 .lbl-ic { display: inline-flex; align-items: center; gap: 8px; }
 .lbl-ic .ic { color: var(--fg-2); font-size: 16px; }
+.cell.stack .lbl-ic { gap: 6px; }
+.cell.stack .lbl-ic .ic { font-size: 13px; }
 /* order: static line + drag list */
 .ord-sub { margin: 0 0 4px; font-size: .8125rem; color: var(--fg-2); line-height: 1.4; }
 .reorder { list-style: none; margin: 8px -12px 2px -16px; padding: 0; border-top: 1px solid var(--sep); }
@@ -844,6 +846,13 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
     cash: `<rect x="1.7" y="4" width="12.6" height="8" rx="1.3"/><circle cx="8" cy="8" r="1.9"/><path d="M4.3 6.4v3.2M11.7 6.4v3.2"/>`,
     wallet: `<path d="M12 4.8V3.6a.9.9 0 0 0-1.1-.9L3.3 4.5a1 1 0 0 0-.8 1v6.7a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1V5.8a1 1 0 0 0-1-1H3.5"/><path d="M10.6 9.1h1.2"/>`,
     progress: `<circle cx="8" cy="8" r="5.8"/><path d="m5.4 8.2 1.8 1.8 3.4-3.7"/>`,
+    title: `<path d="M3.5 4.5h9M8 4.5v8"/>`,
+    text: `<path d="M3 4.5h10M3 8h10M3 11.5h6.5"/>`,
+    flag: `<path d="M4 14V2.8M4 3h7.4l-1.6 2.6L11.4 8.2H4"/>`,
+    status: `<circle cx="8" cy="8" r="5.8"/><path d="M8 2.2a5.8 5.8 0 0 1 0 11.6z" fill="currentColor" stroke="none"/>`,
+    shield: `<path d="M8 1.8 13 4v3.6c0 3-2.1 5.4-5 6.6-2.9-1.2-5-3.6-5-6.6V4z"/>`,
+    link: `<path d="M6.6 9.4 9.4 6.6"/><path d="M7.3 4.4 8.6 3.1a2.6 2.6 0 0 1 3.7 3.7l-1.3 1.3"/><path d="M8.7 11.6 7.4 12.9a2.6 2.6 0 0 1-3.7-3.7L5 7.9"/>`,
+    note: `<path d="M3.5 2.5h6.2L12.5 5.3v8.2h-9z"/><path d="M9.5 2.5v3h3M5.6 8.4h4.8M5.6 10.9h3.2"/>`,
     person: `<circle cx="8" cy="5.4" r="2.6"/><path d="M2.8 13.6c.7-2.5 2.7-3.9 5.2-3.9s4.5 1.4 5.2 3.9"/>`,
     steps: `<path d="M6.2 4h7.3M6.2 8h7.3M6.2 12h7.3"/><circle cx="3" cy="4" r=".6" fill="currentColor"/><circle cx="3" cy="8" r=".6" fill="currentColor"/><circle cx="3" cy="12" r=".6" fill="currentColor"/>`,
   };
@@ -991,13 +1000,13 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
   }
 
   const CHEV_DOWN = `<svg viewBox="0 0 10 14" aria-hidden="true"><path d="m2 5 3-3 3 3M2 9l3 3 3-3" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-  function numCell(key, label, unit) {
+  function numCell(key, label, unit, icon) {
     const v = S.edit[key];
-    return `<label class="cell" for="f-${key}"><span class="cell-label">${label}</span><span class="cell-input"><input id="f-${key}" type="number" inputmode="numeric" min="0" step="any" data-k="${key}" data-type="num" value="${v ?? ""}" placeholder="–"><span class="unit">${unit}</span></span></label>`;
+    return `<label class="cell" for="f-${key}"><span class="cell-label${icon ? " lbl-ic" : ""}">${icon ? ic(icon) : ""}${label}</span><span class="cell-input"><input id="f-${key}" type="number" inputmode="numeric" min="0" step="any" data-k="${key}" data-type="num" value="${v ?? ""}" placeholder="–"><span class="unit">${unit}</span></span></label>`;
   }
-  function selCell(key, label, options) {
+  function selCell(key, label, options, icon) {
     const v = S.edit[key];
-    return `<label class="cell" for="f-${key}"><span class="cell-label">${label}</span><span class="sel"><select id="f-${key}" data-k="${key}">${options.map(([k, l]) => `<option value="${k}"${k === v ? " selected" : ""}>${esc(l)}</option>`).join("")}</select>${CHEV_DOWN}</span></label>`;
+    return `<label class="cell" for="f-${key}"><span class="cell-label${icon ? " lbl-ic" : ""}">${icon ? ic(icon) : ""}${label}</span><span class="sel"><select id="f-${key}" data-k="${key}">${options.map(([k, l]) => `<option value="${k}"${k === v ? " selected" : ""}>${esc(l)}</option>`).join("")}</select>${CHEV_DOWN}</span></label>`;
   }
 
   function rangeHtml(k) {
@@ -1090,7 +1099,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
     const prev = list[pos - 2];
     const editing = !!S.orderEdit;
     const toggle = `<button type="button" class="rng-toggle" data-ordertoggle aria-pressed="${editing}" aria-label="${editing ? "Ferdig med å endre rekkefølge" : "Endre rekkefølge"}">${editing ? SVG_CHECK : SVG_PENCIL}</button>`;
-    const top = `<div class="rng-top"><span class="cell-label">Rekkefølge</span><span class="rng-right"><span class="rng-static">Steg ${pos} av ${list.length}</span>${toggle}</span></div>`;
+    const top = `<div class="rng-top"><span class="cell-label lbl-ic">${ic("steps")}Rekkefølge</span><span class="rng-right"><span class="rng-static">Steg ${pos} av ${list.length}</span>${toggle}</span></div>`;
     if (!editing) {
       return `<div class="cell rng" id="order-cell">${top}<p class="ord-sub">${prev ? `Kommer etter <span class="emoji">${esc(prev.icon)}</span> ${esc(prev.title)}` : "Første jobb i planen"}</p></div>`;
     }
@@ -1262,8 +1271,8 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
       bodyEl.innerHTML = `
         <div class="sec">
           <div class="cells">
-            <label class="cell stack" for="f-title"><span class="cell-label">Tittel</span><input id="f-title" type="text" data-k="title" value="${esc(e.title)}" autocomplete="off"></label>
-            <label class="cell stack" for="f-description"><span class="cell-label">Beskrivelse</span><textarea id="f-description" data-k="description" rows="4">${esc(e.description)}</textarea></label>
+            <label class="cell stack" for="f-title"><span class="cell-label lbl-ic">${ic("title")}Tittel</span><input id="f-title" type="text" data-k="title" value="${esc(e.title)}" autocomplete="off"></label>
+            <label class="cell stack" for="f-description"><span class="cell-label lbl-ic">${ic("text")}Beskrivelse</span><textarea id="f-description" data-k="description" rows="4">${esc(e.description)}</textarea></label>
           </div>
         </div>
         <div class="sec">
@@ -1277,24 +1286,24 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
         <div class="sec">
           <h3 class="sec-title">Planlegging</h3>
           <div class="cells">
-            <div class="cell"><span class="cell-label" id="prio-l">Prioritet</span>
+            <div class="cell"><span class="cell-label lbl-ic" id="prio-l">${ic("flag")}Prioritet</span>
               <div class="seg" role="group" aria-labelledby="prio-l">${Object.entries(PRIO).map(([k, p]) => `<button type="button" data-prio="${k}" aria-pressed="${k === e.priority}">${p.label}</button>`).join("")}</div>
             </div>
-            ${selCell("status", "Status", STATUS.map(([k, l]) => [k, l]))}
-            ${selCell("doneBy", "Utføres av", DONE_BY)}
-            <label class="cell" for="f-requiresPro"><span class="cell-label">Krever fagperson</span><span class="switch"><input id="f-requiresPro" type="checkbox" role="switch" data-k="requiresPro" data-type="bool"${e.requiresPro ? " checked" : ""}><span></span></span></label>
+            ${selCell("status", "Status", STATUS.map(([k, l]) => [k, l]), "status")}
+            ${selCell("doneBy", "Utføres av", DONE_BY, "person")}
+            <label class="cell" for="f-requiresPro"><span class="cell-label lbl-ic">${ic("shield")}Krever fagperson</span><span class="switch"><input id="f-requiresPro" type="checkbox" role="switch" data-k="requiresPro" data-type="bool"${e.requiresPro ? " checked" : ""}><span></span></span></label>
             ${orderHtml()}
-            <label class="cell stack" for="f-dependsOn"><span class="cell-label">Må gjøres før/etter</span><input id="f-dependsOn" type="text" data-k="dependsOn" value="${esc(e.dependsOn)}" placeholder="F.eks. «Etter el, før veggplater»"></label>
+            <label class="cell stack" for="f-dependsOn"><span class="cell-label lbl-ic">${ic("link")}Må gjøres før/etter</span><input id="f-dependsOn" type="text" data-k="dependsOn" value="${esc(e.dependsOn)}" placeholder="F.eks. «Etter el, før veggplater»"></label>
           </div>
         </div>
         <div class="sec">
           <h3 class="sec-title">Økonomi</h3>
-          <div class="cells">${numCell("actualCost", "Faktisk kostnad", "kr")}</div>
+          <div class="cells">${numCell("actualCost", "Faktisk kostnad", "kr", "wallet")}</div>
           <p class="sec-note">Fyll inn etter hvert som du betaler. Summen vises øverst som «Brukt hittil».</p>
         </div>
         <div class="sec">
           <h3 class="sec-title">Notater</h3>
-          <div class="cells"><label class="cell stack" for="f-notes"><span class="cell-label">Tilbud, kontaktpersoner, mål, materialliste</span><textarea id="f-notes" data-k="notes" rows="5">${esc(e.notes)}</textarea></label></div>
+          <div class="cells"><label class="cell stack" for="f-notes"><span class="cell-label lbl-ic">${ic("note")}Tilbud, kontaktpersoner, mål, materialliste</span><textarea id="f-notes" data-k="notes" rows="5">${esc(e.notes)}</textarea></label></div>
         </div>
         <div class="sec" id="del-wrap">${deleteHtml()}</div>`;
       updateRangeUI("cost"); updateRangeUI("days");
@@ -1313,7 +1322,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
         </div>
         ${S.editMode ? `<div class="sec">
           <h3 class="sec-title">Notater · ${GROUPS[g].label}</h3>
-          <div class="cells"><label class="cell stack" for="f-gnotes-${g}"><span class="cell-label">${g === "inspo" ? "Lenker og ideer" : g === "naa" ? "Tilstand, mål og funn" : "Hva ble gjort, materialer, garanti"}</span><textarea id="f-gnotes-${g}" data-k="groups.${g}.notes" rows="5">${esc(gr.notes)}</textarea></label></div>
+          <div class="cells"><label class="cell stack" for="f-gnotes-${g}"><span class="cell-label lbl-ic">${ic("note")}${g === "inspo" ? "Lenker og ideer" : g === "naa" ? "Tilstand, mål og funn" : "Hva ble gjort, materialer, garanti"}</span><textarea id="f-gnotes-${g}" data-k="groups.${g}.notes" rows="5">${esc(gr.notes)}</textarea></label></div>
         </div>` : gr.notes ? `<div class="view-block"><h3 class="sec-title">Notater</h3><div class="view-card"><p class="pre">${linkify(gr.notes)}</p></div></div>` : ""}`;
       hydrateImages(bodyEl);
     }
