@@ -882,7 +882,6 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     </div>
     <p class="filter-note" id="filter-note" hidden></p>
     <div id="list"></div>
-    <p class="footnote" id="footnote"></p>
   </section>
 </main>
 
@@ -2258,7 +2257,6 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     $("#proj-title").textContent = p.name;
     $("#mini-title").textContent = p.name;
     document.title = `${p.name} · Villa el mansion`;
-    $("#footnote").textContent = "Prisene er grove estimater (inkl. mva.)" + (p.id === DEFAULT_PROJECT ? " basert på typiske norske priser og antakelser om ca. 70 m² gulv og 130–160 m² veggflate i 1. etasje" : "") + ". Juster tallene når du har målt opp og fått tilbud. Bare e-postadresser i tilgangslisten kan se og endre planen.";
     if (!$("#proj-menu").hidden) renderProjMenu();
   }
   function renderProjMenu() {
