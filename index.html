@@ -915,7 +915,6 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
       const done = t.status === "ferdig";
       let badge = "";
       if (done) badge = `<span class="badge ok" aria-label="Ferdig">${ICON_CHECK}</span>`;
-      else if (S.sort === "order") badge = `<span class="badge" aria-label="Steg ${t.order}">${t.order}</span>`;
       const lead = `<span class="lead icon ${t.priority}"><span class="emoji" aria-hidden="true">${esc(t.icon)}</span>${badge}</span>`;
       const sortable = S.sort === "order";
       return `<div class="row-item${sortable ? " sortable" : ""}" data-id="${esc(t.id)}"><button type="button" class="row${done ? " is-done" : ""}" data-open="${esc(t.id)}">
