@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Oppussing 1. etasje</title>
+<title>Villa el mansion</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Oppussing">
+<meta name="apple-mobile-web-app-title" content="Villa el mansion">
 <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
@@ -121,6 +121,29 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
   letter-spacing: -0.025em; margin: 0; text-wrap: balance;
 }
 .hero p { margin: 6px 0 0; color: var(--fg-2); font-size: .9375rem; }
+.hero .eyebrow { margin: 0 0 4px; font-size: .8125rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-2); }
+.proj-wrap { position: relative; }
+.proj-btn {
+  display: inline-flex; align-items: center; gap: 10px; border: 0; background: transparent; padding: 0; margin: 0;
+  font: inherit; letter-spacing: inherit; color: inherit; text-align: left; border-radius: 10px; cursor: pointer;
+}
+.proj-btn svg { width: .55em; height: .55em; flex: none; color: var(--fg-2); transition: transform .25s var(--ease-sheet); }
+.proj-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+.proj-btn:active { opacity: .7; }
+.proj-menu { left: 0; right: auto; min-width: 280px; }
+.pm-row { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.pm-ic { font-size: 1.05rem; text-align: center; }
+.pm-foot { justify-content: stretch; flex-direction: column; align-items: stretch; }
+.sort-menu .pm-new { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; }
+.pm-new svg { width: 14px; height: 14px; }
+.pm-form { display: flex; gap: 8px; padding: 4px 2px; }
+.pm-form input { flex: 1; min-width: 0; border: 0; border-radius: 9px; background: var(--fill); padding: 9px 11px; font-size: 1rem; outline: none; }
+.pm-form input:focus { box-shadow: 0 0 0 2px color-mix(in srgb, var(--tint) 50%, transparent); }
+.sort-menu .pm-form .btn { width: auto; display: inline-block; padding: 9px 14px; }
+.pm-err { padding: 2px 4px 0; }
+.hero .pm-err { color: var(--high); margin: 4px 0 0; font-size: .8125rem; }
+.sort-menu .btn.primary, .sort-menu .btn.primary:hover, .sort-menu .btn.primary:active { background: var(--tint); color: var(--on-tint); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ---------- Summary tiles ---------- */
 .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 26px; }
@@ -804,7 +827,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 <section class="auth" id="auth" hidden>
   <div class="auth-card">
     <div class="big emoji" aria-hidden="true">🏠</div>
-    <h1>Oppussing 1. etasje</h1>
+    <h1>Villa el mansion</h1>
     <p>Logg inn med e-posten din. Du får en lenke på e-post som logger deg inn.</p>
     <form id="auth-form" novalidate>
       <label for="auth-email" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">E-post</label>
@@ -817,7 +840,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 
 <header class="topbar" id="topbar">
   <div class="wrap">
-    <span class="mini">Oppussing 1. etasje</span>
+    <span class="mini" id="mini-title">Oppussing 1. etasje</span>
     <div class="top-actions">
     <button class="signout" id="signout" type="button" hidden>Logg ut</button>
     </div>
@@ -826,7 +849,11 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 
 <main class="wrap" id="app">
   <section class="hero">
-    <h1>Oppussing 1. etasje</h1>
+    <p class="eyebrow">Villa el mansion</p>
+    <div class="proj-wrap">
+      <h1><button type="button" class="proj-btn" id="proj-btn" aria-haspopup="true" aria-expanded="false" aria-controls="proj-menu"><span id="proj-title">Oppussing 1. etasje</span><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></h1>
+      <div class="sort-menu proj-menu" id="proj-menu" role="group" aria-label="Prosjekter" hidden></div>
+    </div>
   </section>
 
   <section class="stats" id="stats" aria-label="Oppsummering"></section>
@@ -853,7 +880,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     </div>
     <p class="filter-note" id="filter-note" hidden></p>
     <div id="list"></div>
-    <p class="footnote">Prisene er grove estimater (inkl. mva.) basert på typiske norske priser og antakelser om ca. 70 m² gulv og 130–160 m² veggflate i 1. etasje. Juster tallene når du har målt opp og fått tilbud. Bare e-postadresser i tilgangslisten kan se og endre planen.</p>
+    <p class="footnote" id="footnote"></p>
   </section>
 </main>
 
@@ -947,6 +974,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     inspo: { label: "Inspirasjon", intro: "Bilder av løsninger, farger og materialer du liker." },
     resultat: { label: "Resultat", intro: "Ferdig resultat. Fint å ha for egen del, for forsikring og når huset en gang skal selges." },
   };
+  const DEFAULT_PROJECT = "p-1etg";
   const LINK_TYPES = {
     tilbud: { label: "Tilbud", icon: "tag", cls: "t-mid" },
     produkt: { label: "Produkt", icon: "cart", cls: "t-tint" },
@@ -998,6 +1026,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     const t = clone(d || {});
     t.id = id;
     t.title = t.title || "Uten navn";
+    t.project = typeof t.project === "string" && t.project ? t.project : DEFAULT_PROJECT;
     t.icon = (typeof t.icon === "string" && t.icon.trim()) ? t.icon.trim() : DEFAULT_ICON;
     t.description = t.description || "";
     t.priority = PRIO[t.priority] ? t.priority : "middels";
@@ -1029,6 +1058,8 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   };
   if (!SORT_HINT[S.sort]) S.sort = "prio";
   // Filters: empty set = no limit on that field
+  S.allTasks = new Map(); S.projects = new Map(); S.pendingProjects = new Map();
+  S.projectId = store.get("oppussing.project") || DEFAULT_PROJECT;
   S.filter = { status: new Set(), prio: new Set(), doneBy: new Set(), pro: false, hideDone: false };
   try {
     const raw = JSON.parse(store.get("oppussing.filter2") || "null");
@@ -1216,7 +1247,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
       return;
     }
     if (!arr.length) {
-      el.innerHTML = `<div class="group state"><h3>Ingen oppgaver ennå</h3><p>Legg til den første jobben du vil gjøre i 1. etasje. Hver oppgave får beskrivelse, pris, tidsbruk og egne bildemapper.</p>${S.db ? `<button class="add-btn" type="button" data-add>Ny oppgave</button>` : ""}</div>`;
+      el.innerHTML = `<div class="group state"><h3>Ingen oppgaver ennå</h3><p>Legg til den første jobben i prosjektet. Hver oppgave får beskrivelse, pris, tidsbruk, lenker og egne bildemapper.</p>${S.db ? `<button class="add-btn" type="button" data-add>Ny oppgave</button>` : ""}</div>`;
       return;
     }
     el.innerHTML = `<div class="group">` + arr.map((t) => {
@@ -1298,6 +1329,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
       S.draftId = null;
       updateSaveBtn();
     }
+    S.allTasks.set(S.edit.id, clone(S.edit));
     persist(S.edit.id, body(S.edit));
   }
 
@@ -1896,6 +1928,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     const ids = Object.values(t.groups).flatMap((g) => g.photos.map((p) => p.id));
     clearTimeout(saveTimer); saveTimer = null;
     S.tasks.delete(t.id);
+    S.allTasks.delete(t.id);
     const id = t.id;
     closeSheet();
     try { await S.db.doc("tasks/" + id).delete(); } catch {}
@@ -1906,7 +1939,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     if (!S.db) return;
     const ref = S.db.collection("tasks").doc();
     const maxOrder = Math.max(0, ...[...S.tasks.values()].map((t) => t.order).filter((n) => n < 99));
-    const t = normalize(ref.id, { icon: DEFAULT_ICON, priority: "middels", status: "ikke-startet", doneBy: "selv", order: maxOrder + 1, createdAt: new Date().toISOString() });
+    const t = normalize(ref.id, { project: S.projectId, icon: DEFAULT_ICON, priority: "middels", status: "ikke-startet", doneBy: "selv", order: maxOrder + 1, createdAt: new Date().toISOString() });
     t.title = "";
     // A new task is only a draft until something is typed in; it isn't saved before that.
     S.draftId = t.id;
@@ -1920,6 +1953,10 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   document.addEventListener("click", (ev) => {
     const t = ev.target;
     if (t.closest("[data-pf]") && S.edit) { S.pfOpen = !S.pfOpen; renderSheet(); const b = $("[data-pf]"); if (b) b.focus({ preventScroll: true }); return; }
+    if (t.closest("#proj-btn")) return setProjMenu($("#proj-menu").hidden);
+    const pj = t.closest("[data-proj]");
+    if (pj) { setProjMenu(false); if (pj.dataset.proj !== S.projectId) switchProject(pj.dataset.proj); return; }
+    if (t.closest("[data-projnew]")) { S.projForm = { name: "" }; renderProjMenu(); fitMenu($("#proj-menu"), $("#proj-btn")); setTimeout(() => $("#proj-name").focus(), 20); return; }
     if (t.closest("[data-econ]")) { S.econOpen = !S.econOpen; renderStats(); const b = $("[data-econ]"); if (b) b.focus({ preventScroll: true }); return; }
     const open = t.closest("[data-open]");
     if (open) return openSheet(open.dataset.open);
@@ -2017,6 +2054,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   });
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !$("#del-dlg").hidden) { e.preventDefault(); return closeDeleteDialog(); }
+    if (e.key === "Escape" && !$("#proj-menu").hidden) { setProjMenu(false); $("#proj-btn").focus(); return; }
     if (e.key === "Escape" && !$("#filter-menu").hidden) { setFilterMenu(false); $("#filter-btn").focus(); return; }
     if (e.key === "Escape" && !$("#sort-menu").hidden) { setSortMenu(false); $("#sort-btn").focus(); return; }
     if (e.key === "Escape") { if (S.lb) closeLb(); else if (S.iconOpen) { setIconPop(false); $("#icon-btn").focus(); } else if (S.open) requestClose(); }
@@ -2181,16 +2219,100 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     if (!$("#sort-menu").hidden) fitMenu($("#sort-menu"), $("#sort-btn"));
   });
   function syncBackdrop() {
-    const open = $("#filter-btn").getAttribute("aria-expanded") === "true" || $("#sort-btn").getAttribute("aria-expanded") === "true";
+    const open = ["#filter-btn", "#sort-btn", "#proj-btn"].some((sel) => $(sel).getAttribute("aria-expanded") === "true");
     $("#menu-backdrop").hidden = !open;
   }
   $("#menu-backdrop").addEventListener("click", (e) => {
     e.preventDefault(); e.stopPropagation();
     if ($("#filter-btn").getAttribute("aria-expanded") === "true") { setFilterMenu(false); $("#filter-btn").focus({ preventScroll: true }); }
     if ($("#sort-btn").getAttribute("aria-expanded") === "true") { setSortMenu(false); $("#sort-btn").focus({ preventScroll: true }); }
+    if ($("#proj-btn").getAttribute("aria-expanded") === "true") { setProjMenu(false); $("#proj-btn").focus({ preventScroll: true }); }
   });
   $("#menu-backdrop").addEventListener("wheel", (e) => e.preventDefault(), { passive: false });
   $("#menu-backdrop").addEventListener("touchmove", (e) => e.preventDefault(), { passive: false });
+
+  // ---------- projects (all under Villa el mansion) ----------
+  function projectList() {
+    const arr = [...S.projects.values()];
+    if (!arr.length) arr.push({ id: DEFAULT_PROJECT, name: "Oppussing 1. etasje", icon: "🏠", createdAt: "" });
+    return arr.sort((a, b) => (a.id === DEFAULT_PROJECT ? -1 : b.id === DEFAULT_PROJECT ? 1 : 0) || String(a.createdAt).localeCompare(String(b.createdAt)) || a.name.localeCompare(b.name, "nb"));
+  }
+  function ensureProjects() {
+    // Existing tasks predate projects; give them a saved "Oppussing 1. etasje" project row once.
+    if (S.projects.size || !S.db || S.seededProject) return;
+    S.seededProject = true;
+    const p = { kind: "project", name: "Oppussing 1. etasje", icon: "🏠", createdAt: new Date().toISOString() };
+    const row = { id: DEFAULT_PROJECT, name: p.name, icon: p.icon, createdAt: p.createdAt };
+    S.projects.set(DEFAULT_PROJECT, row); S.pendingProjects.set(DEFAULT_PROJECT, row);
+    persist(DEFAULT_PROJECT, p);
+  }
+  function currentProject() { return projectList().find((p) => p.id === S.projectId) || projectList()[0]; }
+  function applyProject() {
+    const list = projectList();
+    if (!list.some((p) => p.id === S.projectId)) S.projectId = list[0].id;
+    S.tasks = new Map([...S.allTasks].filter(([, t]) => t.project === S.projectId));
+    if (S.edit) S.tasks.set(S.edit.id, clone(S.edit)); // keep local edits for the open task
+    const p = currentProject();
+    $("#proj-title").textContent = p.name;
+    $("#mini-title").textContent = p.name;
+    document.title = `${p.name} · Villa el mansion`;
+    $("#footnote").textContent = "Prisene er grove estimater (inkl. mva.)" + (p.id === DEFAULT_PROJECT ? " basert på typiske norske priser og antakelser om ca. 70 m² gulv og 130–160 m² veggflate i 1. etasje" : "") + ". Juster tallene når du har målt opp og fått tilbud. Bare e-postadresser i tilgangslisten kan se og endre planen.";
+    if (!$("#proj-menu").hidden) renderProjMenu();
+  }
+  function renderProjMenu() {
+    const counts = {};
+    S.allTasks.forEach((t) => { counts[t.project] = (counts[t.project] || 0) + 1; });
+    $("#proj-menu").innerHTML = `<div class="fm-head">Prosjekter i Villa el mansion</div>` +
+      projectList().map((p) => `<button type="button" role="menuitemradio" data-proj="${esc(p.id)}" aria-checked="${p.id === S.projectId}">
+        <span class="sm-check">${ICON_CHECK}</span><span class="pm-row"><span class="emoji pm-ic" aria-hidden="true">${esc(p.icon)}</span><span class="sm-t">${esc(p.name)}</span><span class="fm-n">${counts[p.id] || 0}</span></span></button>`).join("") +
+      `<div class="fm-foot pm-foot">${S.projForm
+        ? `<form id="proj-form" class="pm-form" novalidate><label for="proj-name" class="sr-only">Navn på nytt prosjekt</label><input id="proj-name" type="text" placeholder="F.eks. Bad 2. etasje" autocomplete="off" value="${esc(S.projForm.name || "")}"><button type="submit" class="btn primary">Opprett</button></form>${S.projForm.err ? `<p class="field-err pm-err">${esc(S.projForm.err)}</p>` : ""}`
+        : `<button type="button" class="fm-clear pm-new" data-projnew><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>Nytt prosjekt</button>`}</div>`;
+  }
+  let projCloseT = null;
+  function setProjMenu(open) {
+    const m = $("#proj-menu"), b = $("#proj-btn");
+    clearTimeout(projCloseT);
+    b.setAttribute("aria-expanded", String(open));
+    syncBackdrop();
+    if (open) {
+      if (!$("#filter-menu").hidden) setFilterMenu(false);
+      if (!$("#sort-menu").hidden) setSortMenu(false);
+      S.projForm = null;
+      renderProjMenu();
+      m.hidden = false;
+      fitMenu(m, b);
+      requestAnimationFrame(() => m.classList.add("open"));
+      setTimeout(() => { const c = m.querySelector('[aria-checked="true"]'); if (c) c.focus({ preventScroll: true }); }, 30);
+    } else {
+      m.classList.remove("open");
+      projCloseT = setTimeout(() => { m.hidden = true; }, 180);
+    }
+  }
+  function switchProject(id) {
+    S.projectId = id;
+    store.set("oppussing.project", id);
+    applyProject();
+    renderList();
+    window.scrollTo(0, 0);
+  }
+  async function createProject(name) {
+    const id = "proj-" + crypto.randomUUID();
+    const p = { kind: "project", name, icon: "🏗️", createdAt: new Date().toISOString() };
+    const row = { id, name, icon: p.icon, createdAt: p.createdAt };
+    S.projects.set(id, row); S.pendingProjects.set(id, row);
+    persist(id, p);
+    setProjMenu(false);
+    switchProject(id);
+  }
+  document.addEventListener("submit", (ev) => {
+    if (ev.target.id !== "proj-form") return;
+    ev.preventDefault();
+    const name = $("#proj-name").value.trim();
+    if (!name) { S.projForm = { name: "", err: "Gi prosjektet et navn." }; renderProjMenu(); $("#proj-name").focus(); return; }
+    if (projectList().some((p) => p.name.toLowerCase() === name.toLowerCase())) { S.projForm = { name, err: "Det finnes allerede et prosjekt med det navnet." }; renderProjMenu(); $("#proj-name").focus(); return; }
+    createProject(name);
+  });
 
   // filter dropdown
   let filterCloseT = null;
@@ -2423,8 +2545,16 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     renderList();
     const timer = setTimeout(() => { if (!S.loaded) { S.slow = true; renderList(); } }, 10000);
     S.db.collection("tasks").onSnapshot((snap) => {
-      S.tasks = new Map(snap.docs.map((d) => [d.id, normalize(d.id, d.data())]));
-      if (S.edit) S.tasks.set(S.edit.id, clone(S.edit)); // keep local edits for the open task
+      S.allTasks = new Map(); S.projects = new Map();
+      snap.docs.forEach((d) => {
+        const data = d.data() || {};
+        if (data.kind === "project") S.projects.set(d.id, { id: d.id, name: data.name || "Uten navn", icon: data.icon || "🏠", createdAt: data.createdAt || "" });
+        else S.allTasks.set(d.id, normalize(d.id, data));
+      });
+      // projects created here but not yet returned by the store stay visible
+      S.pendingProjects.forEach((p, id) => { if (S.projects.has(id)) S.pendingProjects.delete(id); else S.projects.set(id, p); });
+      if (!snap.metadata.fromCache) ensureProjects();
+      applyProject();
       S.loaded = true; S.slow = false; clearTimeout(timer);
       if (!S.open) renderList(); else renderStats();
     }, () => {
