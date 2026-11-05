@@ -572,6 +572,28 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .topbar { background: var(--bg); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 .row-item { position: relative; background: var(--surface); }
+/* delete button + confirmation dialog */
+.round-btn.danger-btn { color: var(--high); }
+.head-actions .round-btn.danger-btn { color: var(--high); }
+.dlg-scrim {
+  position: fixed; inset: 0; z-index: 50; display: grid; place-items: center;
+  padding: 24px max(20px, env(safe-area-inset-right, 0px)) 24px max(20px, env(safe-area-inset-left, 0px));
+  background: var(--scrim); opacity: 0; transition: opacity .18s ease;
+}
+.dlg-scrim.open { opacity: 1; }
+.dlg {
+  width: min(340px, 100%); background: var(--menu); border-radius: 18px; padding: 22px 20px 18px; text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3), 0 0 0 .5px var(--sep);
+  transform: scale(.94); transition: transform .26s var(--ease-sheet);
+}
+.dlg-scrim.open .dlg { transform: none; }
+.dlg-ic { width: 46px; height: 46px; border-radius: 50%; margin: 0 auto 12px; display: grid; place-items: center; background: var(--high-soft); color: var(--high); }
+.dlg-ic svg { width: 22px; height: 22px; }
+.dlg h2 { margin: 0 0 6px; font: 700 1.1875rem/1.25 var(--font-display); letter-spacing: -0.015em; }
+.dlg p { margin: 0 0 18px; color: var(--fg-2); font-size: .9375rem; line-height: 1.45; overflow-wrap: anywhere; }
+.dlg-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.dlg-btns .btn { padding: 12px; border-radius: 12px; font-size: 1rem; }
+@media (prefers-reduced-motion: reduce) { .dlg { transform: none; } }
 /* sheet: read view + edit toggle */
 .head-actions { display: flex; align-items: center; gap: 8px; }
 .round-btn {
@@ -703,6 +725,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
       <p class="save-state" id="save-state" aria-live="polite"></p>
     </div>
     <div class="head-actions">
+      <button type="button" class="round-btn danger-btn" id="delete-task" aria-label="Slett oppgave" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.8 4.2h10.4M6.3 4.2V2.8h3.4v1.4M4.2 4.2l.6 9h6.4l.6-9M6.7 6.7v4.3M9.3 6.7v4.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button type="button" class="round-btn" id="edit-toggle" aria-pressed="false" aria-label="Rediger oppgave"></button>
       <button type="button" class="round-btn" id="sheet-close" aria-label="Lukk"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg></button>
     </div>
@@ -721,6 +744,18 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     <button type="button" role="tab" data-tab="resultat">Resultat</button>
   </nav>
 </section>
+
+<div class="dlg-scrim" id="del-dlg" hidden>
+  <div class="dlg" role="alertdialog" aria-modal="true" aria-labelledby="del-title" aria-describedby="del-desc">
+    <div class="dlg-ic"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.8 4.2h10.4M6.3 4.2V2.8h3.4v1.4M4.2 4.2l.6 9h6.4l.6-9M6.7 6.7v4.3M9.3 6.7v4.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <h2 id="del-title">Slette oppgaven?</h2>
+    <p id="del-desc"></p>
+    <div class="dlg-btns">
+      <button type="button" class="btn" id="del-cancel">Avbryt</button>
+      <button type="button" class="btn red" id="del-confirm">Slett oppgave</button>
+    </div>
+  </div>
+</div>
 
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Bilde">
   <div class="lb-top">
@@ -1254,6 +1289,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     b.setAttribute("aria-pressed", String(on));
     b.setAttribute("aria-label", on ? "Ferdig med å redigere" : "Rediger oppgave");
     b.innerHTML = on ? SVG_DONE : SVG_EDIT;
+    $("#delete-task").hidden = !on;
     $("#sheet").classList.toggle("is-editing", on);
     $("#icon-btn").tabIndex = on ? 0 : -1;
     if (!on) setSave("");
@@ -1329,8 +1365,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
         <div class="sec">
           <h3 class="sec-title">Notater</h3>
           <div class="cells"><label class="cell stack" for="f-notes"><span class="cell-label lbl-ic">${ic("note")}Tilbud, kontaktpersoner, mål, materialliste</span><textarea id="f-notes" data-k="notes" rows="5">${esc(e.notes)}</textarea></label></div>
-        </div>
-        <div class="sec" id="del-wrap">${deleteHtml()}</div>`;
+        </div>`;
       updateRangeUI("cost"); updateRangeUI("days");
     } else {
       const g = S.tab, gr = e.groups[g];
@@ -1555,6 +1590,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     if (p) { p.caption = e.target.value; scheduleSave(); }
   });
   document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !$("#del-dlg").hidden) { e.preventDefault(); return closeDeleteDialog(); }
     if (e.key === "Escape" && !$("#sort-menu").hidden) { setSortMenu(false); $("#sort-btn").focus(); return; }
     if (e.key === "Escape") { if (S.lb) closeLb(); else if (S.iconOpen) { setIconPop(false); $("#icon-btn").focus(); } else if (S.open) closeSheet(); }
     if (S.lb && document.activeElement !== $("#lb-cap")) {
@@ -1618,6 +1654,33 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     if (el.type === "checkbox") { setPath(S.edit, el.dataset.k, el.checked); flushSave(); }
     else if (el.tagName === "SELECT") { setPath(S.edit, el.dataset.k, el.value); flushSave(); }
     else if (el.dataset.k === "order" && S.edit.order == null) { S.edit.order = 99; }
+  });
+
+  // delete confirmation dialog
+  function openDeleteDialog() {
+    if (!S.edit) return;
+    const n = Object.values(S.edit.groups).reduce((s, g) => s + g.photos.length, 0);
+    $("#del-desc").textContent = `«${S.edit.title}»${n ? ` og ${n} bilde${n === 1 ? "" : "r"}` : ""} slettes for godt. Dette kan ikke angres.`;
+    const d = $("#del-dlg");
+    d.hidden = false;
+    requestAnimationFrame(() => d.classList.add("open"));
+    setTimeout(() => $("#del-cancel").focus(), 30);
+  }
+  function closeDeleteDialog(refocus = true) {
+    const d = $("#del-dlg");
+    d.classList.remove("open");
+    setTimeout(() => { if (!d.classList.contains("open")) d.hidden = true; }, 180);
+    if (refocus) { const b = $("#delete-task"); if (b && !b.hidden) b.focus(); }
+  }
+  $("#delete-task").addEventListener("click", openDeleteDialog);
+  $("#del-cancel").addEventListener("click", () => closeDeleteDialog());
+  $("#del-dlg").addEventListener("click", (e) => { if (e.target === e.currentTarget) closeDeleteDialog(); });
+  $("#del-confirm").addEventListener("click", () => { closeDeleteDialog(false); deleteTask(); });
+  $("#del-dlg").addEventListener("keydown", (e) => {
+    if (e.key !== "Tab") return;
+    const a = $("#del-cancel"), b = $("#del-confirm");
+    if (e.shiftKey && document.activeElement === a) { e.preventDefault(); b.focus(); }
+    else if (!e.shiftKey && document.activeElement === b) { e.preventDefault(); a.focus(); }
   });
 
   // sort dropdown
