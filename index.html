@@ -572,6 +572,10 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
   .topbar { background: var(--bg); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 .row-item { position: relative; background: var(--surface); }
+/* title required on new tasks */
+.field-err { display: block; color: var(--high); font-size: .8125rem; padding: 2px 0 4px; }
+.cell.has-err .cell-label { color: var(--high); }
+.round-btn.is-blocked[aria-pressed="true"], .head-actions .round-btn.is-blocked[aria-pressed="true"] { background: var(--fill); color: var(--fg-3); }
 /* delete button + confirmation dialog */
 .round-btn.danger-btn { color: var(--high); }
 .head-actions .round-btn.danger-btn { color: var(--high); }
@@ -1018,8 +1022,9 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     if (!S.edit) return;
     S.tasks.set(S.edit.id, clone(S.edit));
     if (S.draftId === S.edit.id) {
-      if (isBlankTask(S.edit)) { setSave(""); return; }
+      if (!S.edit.title.trim()) { setSave(isBlankTask(S.edit) ? "" : "Skriv en tittel for å lagre"); return; }
       S.draftId = null;
+      updateSaveBtn();
     }
     persist(S.edit.id, body(S.edit));
   }
@@ -1301,6 +1306,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     b.setAttribute("aria-label", on ? "Ferdig med å redigere" : "Rediger oppgave");
     b.innerHTML = on ? SVG_DONE : SVG_EDIT;
     $("#delete-task").hidden = !on;
+    updateSaveBtn();
     $("#sheet").classList.toggle("is-editing", on);
     $("#icon-btn").tabIndex = on ? 0 : -1;
     if (!on) setSave("");
@@ -1550,7 +1556,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     const tab = t.closest("#tabs button");
     if (tab && S.edit) { if (saveTimer) flushSave(); S.tab = tab.dataset.tab; S.photoErr = ""; renderSheet(); $("#sheet-body").scrollTop = 0; return; }
     if (t.closest("#icon-btn") && S.edit) return S.editMode ? setIconPop(!S.iconOpen) : undefined;
-    if (t.closest("#edit-toggle") && S.edit) return setEditMode(!S.editMode);
+    if (t.closest("#edit-toggle") && S.edit) { if (S.editMode && draftNeedsTitle()) return showTitleError(); return setEditMode(!S.editMode); }
     if (t.closest("[data-ordertoggle]") && S.edit) {
       S.orderEdit = !S.orderEdit;
       rerenderOrder();
@@ -1591,8 +1597,8 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     const lbd = t.closest("[data-lbdel]");
     if (lbd && S.lb) { const a = lbd.dataset.lbdel; if (a === "yes") return deletePhoto(); S.lbConfirm = a === "ask"; return renderLb(); }
   });
-  $("#sheet-close").addEventListener("click", closeSheet);
-  $("#scrim").addEventListener("click", closeSheet);
+  $("#sheet-close").addEventListener("click", requestClose);
+  $("#scrim").addEventListener("click", requestClose);
   $("#lb-close").addEventListener("click", closeLb);
   $("#lb-prev").addEventListener("click", () => { if (S.lb && S.lb.i > 0) { S.lb.i--; S.lbConfirm = false; renderLb(); } });
   $("#lb-next").addEventListener("click", () => { if (S.lb) { S.lb.i++; S.lbConfirm = false; renderLb(); } });
@@ -1604,7 +1610,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !$("#del-dlg").hidden) { e.preventDefault(); return closeDeleteDialog(); }
     if (e.key === "Escape" && !$("#sort-menu").hidden) { setSortMenu(false); $("#sort-btn").focus(); return; }
-    if (e.key === "Escape") { if (S.lb) closeLb(); else if (S.iconOpen) { setIconPop(false); $("#icon-btn").focus(); } else if (S.open) closeSheet(); }
+    if (e.key === "Escape") { if (S.lb) closeLb(); else if (S.iconOpen) { setIconPop(false); $("#icon-btn").focus(); } else if (S.open) requestClose(); }
     if (S.lb && document.activeElement !== $("#lb-cap")) {
       if (e.key === "ArrowLeft") $("#lb-prev").click();
       if (e.key === "ArrowRight") $("#lb-next").click();
@@ -1641,6 +1647,10 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     if (el.dataset.k === "icon") v = v.trim() || DEFAULT_ICON;
     setPath(S.edit, el.dataset.k, v);
     if (el.dataset.k === "title" || el.dataset.k === "icon") setSheetTitle();
+    if (el.dataset.k === "title") {
+      updateSaveBtn();
+      if (v.trim() && $("#title-err")) { $("#title-err").remove(); el.closest(".cell").classList.remove("has-err"); el.removeAttribute("aria-invalid"); el.removeAttribute("aria-describedby"); }
+    }
     if (el.dataset.k === "icon") document.querySelectorAll("#icon-pick button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.icon === v)));
     scheduleSave();
   });
@@ -1669,14 +1679,58 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   });
 
   // delete confirmation dialog
-  function openDeleteDialog() {
-    if (!S.edit) return;
-    const n = Object.values(S.edit.groups).reduce((s, g) => s + g.photos.length, 0);
-    $("#del-desc").textContent = `«${S.edit.title}»${n ? ` og ${n} bilde${n === 1 ? "" : "r"}` : ""} slettes for godt. Dette kan ikke angres.`;
+  // A new task needs a title before it can be saved
+  function draftNeedsTitle() { return S.edit && S.draftId === S.edit.id && !S.edit.title.trim(); }
+  function updateSaveBtn() {
+    const b = $("#edit-toggle");
+    const blocked = S.editMode && draftNeedsTitle();
+    b.classList.toggle("is-blocked", blocked);
+    b.setAttribute("aria-disabled", String(blocked));
+  }
+  function showTitleError() {
+    const f = $("#f-title");
+    if (!f) return;
+    const cell = f.closest(".cell");
+    cell.classList.add("has-err");
+    if (!$("#title-err")) cell.insertAdjacentHTML("beforeend", `<span class="field-err" id="title-err" role="alert">Skriv en tittel for å lagre oppgaven.</span>`);
+    f.setAttribute("aria-invalid", "true");
+    f.setAttribute("aria-describedby", "title-err");
+    f.focus();
+  }
+  function requestClose() {
+    if (!S.open) return;
+    if (draftNeedsTitle() && !isBlankTask(S.edit)) {
+      return openConfirm({
+        title: "Forkaste ny oppgave?",
+        desc: "Oppgaven har ingen tittel og blir ikke lagret. Det du har skrevet forsvinner.",
+        confirm: "Forkast",
+        cancel: "Fortsett",
+        onConfirm: closeSheet,
+      });
+    }
+    closeSheet();
+  }
+  let dlgAction = null;
+  function openConfirm({ title, desc, confirm, cancel = "Avbryt", onConfirm }) {
+    $("#del-title").textContent = title;
+    $("#del-desc").textContent = desc;
+    $("#del-confirm").textContent = confirm;
+    $("#del-cancel").textContent = cancel;
+    dlgAction = onConfirm;
     const d = $("#del-dlg");
     d.hidden = false;
     requestAnimationFrame(() => d.classList.add("open"));
     setTimeout(() => $("#del-cancel").focus(), 30);
+  }
+  function openDeleteDialog() {
+    if (!S.edit) return;
+    const n = Object.values(S.edit.groups).reduce((s, g) => s + g.photos.length, 0);
+    openConfirm({
+      title: "Slette oppgaven?",
+      desc: `«${S.edit.title || "Ny oppgave"}»${n ? ` og ${n} bilde${n === 1 ? "" : "r"}` : ""} slettes for godt. Dette kan ikke angres.`,
+      confirm: "Slett oppgave",
+      onConfirm: deleteTask,
+    });
   }
   function closeDeleteDialog(refocus = true) {
     const d = $("#del-dlg");
@@ -1687,7 +1741,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   $("#delete-task").addEventListener("click", openDeleteDialog);
   $("#del-cancel").addEventListener("click", () => closeDeleteDialog());
   $("#del-dlg").addEventListener("click", (e) => { if (e.target === e.currentTarget) closeDeleteDialog(); });
-  $("#del-confirm").addEventListener("click", () => { closeDeleteDialog(false); deleteTask(); });
+  $("#del-confirm").addEventListener("click", () => { closeDeleteDialog(false); const f = dlgAction; dlgAction = null; if (f) f(); });
   $("#del-dlg").addEventListener("keydown", (e) => {
     if (e.key !== "Tab") return;
     const a = $("#del-cancel"), b = $("#del-confirm");
@@ -1751,7 +1805,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     sheet.style.transition = ""; sheet.style.transform = "";
     const shouldClose = projected > drag.h * 0.32;
     drag = null;
-    if (shouldClose) closeSheet();
+    if (shouldClose) requestClose();
   }
   for (const el of [$("#sheet-grab"), $("#sheet-head")]) {
     el.addEventListener("pointerdown", dragStart);
