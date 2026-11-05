@@ -195,6 +195,20 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 /* dual range sliders */
 /* list header + sort dropdown */
 .list-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.list-tools { display: flex; align-items: center; gap: 8px; }
+.sort-btn.is-active, .sort-btn.is-active[aria-expanded="true"] { background: var(--tint); color: var(--on-tint); }
+.f-count { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 99px; display: grid; place-items: center; font-size: .6875rem; font-weight: 700; background: var(--on-tint); color: var(--tint); font-variant-numeric: tabular-nums; }
+.filter-note { margin: -2px 16px 10px; font-size: .8125rem; color: var(--fg-2); }
+.filter-menu { min-width: 236px; }
+.fm-head { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--fg-2); padding: 6px 10px 4px; }
+.filter-menu [data-fstatus] { display: grid; grid-template-columns: 20px auto 1fr; gap: 10px; align-items: center; padding: 8px 10px; }
+.fm-box { width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--fg-3); display: grid; place-items: center; color: transparent; transition: background .12s ease, border-color .12s ease; }
+.fm-box svg { width: 12px; height: 12px; }
+[data-fstatus][aria-checked="true"] .fm-box { background: var(--tint); border-color: var(--tint); color: var(--on-tint); }
+.fm-n { justify-self: end; color: var(--fg-2); font-size: .8125rem; font-variant-numeric: tabular-nums; }
+.fm-foot { border-top: 1px solid var(--sep); margin-top: 4px; padding: 6px 4px 2px; display: flex; justify-content: flex-end; }
+.sort-menu .fm-clear { width: auto; display: inline-block; padding: 6px 10px; color: var(--tint); font-weight: 600; font-size: .875rem; border-radius: 8px; }
+.sort-menu .fm-clear[disabled] { color: var(--fg-3); cursor: default; }
 .list-bar .sec-title { margin: 0 0 0 16px; }
 .sort-wrap { position: relative; }
 .sort-btn {
@@ -698,6 +712,14 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   <section aria-labelledby="list-title">
     <div class="list-bar">
       <h2 id="list-title" class="sec-title">Oppgaver</h2>
+      <div class="list-tools">
+      <div class="sort-wrap">
+        <button type="button" class="sort-btn" id="filter-btn" aria-haspopup="true" aria-expanded="false" aria-controls="filter-menu">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 3.5h11l-4.2 5v4l-2.6 1.2V8.5z"/></svg>
+          <span>Filter</span><span class="f-count" id="filter-count" hidden></span>
+        </button>
+        <div class="sort-menu filter-menu" id="filter-menu" role="group" aria-label="Filtrer oppgaver" hidden></div>
+      </div>
       <div class="sort-wrap">
         <button type="button" class="sort-btn" id="sort-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="sort-menu">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13V3M2.5 5.5 5 3l2.5 2.5M11 3v10M8.5 10.5 11 13l2.5-2.5"/></svg>
@@ -705,7 +727,9 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
         </button>
         <div class="sort-menu" id="sort-menu" role="menu" aria-label="Sorter oppgaver" hidden></div>
       </div>
+      </div>
     </div>
+    <p class="filter-note" id="filter-note" hidden></p>
     <div id="list"></div>
     <p class="footnote">Prisene er grove estimater (inkl. mva.) basert på typiske norske priser og antakelser om ca. 70 m² gulv og 130–160 m² veggflate i 1. etasje. Juster tallene når du har målt opp og fått tilbud. Bare e-postadresser i tilgangslisten kan se og endre planen.</p>
   </section>
@@ -874,6 +898,9 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     confirmDelete: false, lb: null, lbConfirm: false,
   };
   if (!SORT_HINT[S.sort]) S.sort = "prio";
+  S.filter = new Set();
+  try { const f = JSON.parse(store.get("oppussing.filter") || "[]"); if (Array.isArray(f)) f.forEach((k) => STATUS_MAP[k] && S.filter.add(k)); } catch {}
+  function saveFilter() { store.set("oppussing.filter", JSON.stringify([...S.filter])); }
 
   // ---------- list rendering ----------
   function sorted() {
@@ -936,6 +963,15 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     $("#sort-label").textContent = SORT_LABEL[S.sort];
     $("#sort-menu").innerHTML = Object.keys(SORT_LABEL).map((k) => `<button type="button" role="menuitemradio" data-sort="${k}" aria-checked="${k === S.sort}">
       <span class="sm-check">${ICON_CHECK}</span><span><span class="sm-t">${SORT_LABEL[k]}</span><span class="sm-d">${SORT_HINT[k]}</span></span></button>`).join("");
+    const all = [...S.tasks.values()];
+    $("#filter-menu").innerHTML = `<div class="fm-head">Status</div>` + STATUS.map(([k, l, cls]) => {
+      const n = all.filter((t) => t.status === k).length;
+      return `<button type="button" role="checkbox" data-fstatus="${k}" aria-checked="${S.filter.has(k)}">
+        <span class="fm-box">${ICON_CHECK}</span><span class="chip ${cls}">${l}</span><span class="fm-n">${n}</span></button>`;
+    }).join("") + `<div class="fm-foot"><button type="button" class="fm-clear" data-fclear${S.filter.size ? "" : " disabled"}>Vis alle</button></div>`;
+    const fc = $("#filter-count");
+    fc.hidden = !S.filter.size; fc.textContent = S.filter.size;
+    $("#filter-btn").classList.toggle("is-active", S.filter.size > 0);
     renderStats();
 
     if (S.fatal) { el.innerHTML = `<div class="group state"><h3>Kan ikke laste oppgavene</h3><p>${esc(S.fatal)}</p></div>`; return; }
@@ -943,7 +979,15 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
       el.innerHTML = `<div class="group state"><div class="spinner" aria-hidden="true"></div><p>${S.slow ? "Får ikke kontakt med lagringen ennå. Sjekk nettforbindelsen; siden prøver igjen automatisk." : "Henter oppgavene …"}</p></div>`;
       return;
     }
-    const arr = sorted();
+    const allSorted = sorted();
+    const arr = S.filter.size ? allSorted.filter((t) => S.filter.has(t.status)) : allSorted;
+    const note = $("#filter-note");
+    note.hidden = !S.filter.size || !allSorted.length;
+    note.textContent = `Viser ${arr.length} av ${allSorted.length} oppgaver · ${[...S.filter].map((k) => STATUS_MAP[k].label).join(", ")}`;
+    if (allSorted.length && !arr.length) {
+      el.innerHTML = `<div class="group state"><h3>Ingen oppgaver her</h3><p>Ingen oppgaver har valgt status akkurat nå.</p><button class="add-btn" type="button" data-fclear style="margin-top:16px">Vis alle oppgaver</button></div>`;
+      return;
+    }
     if (!arr.length) {
       el.innerHTML = `<div class="group state"><h3>Ingen oppgaver ennå</h3><p>Legg til den første jobben du vil gjøre i 1. etasje. Hver oppgave får beskrivelse, pris, tidsbruk og egne bildemapper.</p>${S.db ? `<button class="add-btn" type="button" data-add>Ny oppgave</button>` : ""}</div>`;
       return;
@@ -1553,6 +1597,11 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     const sortB = t.closest("#sort-menu [data-sort]");
     if (sortB) { S.sort = sortB.dataset.sort; store.set("oppussing.sort2", S.sort); setSortMenu(false); $("#sort-btn").focus({ preventScroll: true }); return renderList(); }
     if (!$("#sort-menu").hidden && !t.closest("#sort-menu")) setSortMenu(false);
+    if (t.closest("#filter-btn")) return setFilterMenu($("#filter-menu").hidden);
+    const fs = t.closest("[data-fstatus]");
+    if (fs) { const k = fs.dataset.fstatus; S.filter.has(k) ? S.filter.delete(k) : S.filter.add(k); saveFilter(); renderList(); const again = document.querySelector(`[data-fstatus="${k}"]`); if (again) again.focus({ preventScroll: true }); return; }
+    if (t.closest("[data-fclear]")) { S.filter.clear(); saveFilter(); renderList(); return; }
+    if (!$("#filter-menu").hidden && !t.closest("#filter-menu")) setFilterMenu(false);
     const tab = t.closest("#tabs button");
     if (tab && S.edit) { if (saveTimer) flushSave(); S.tab = tab.dataset.tab; S.photoErr = ""; renderSheet(); $("#sheet-body").scrollTop = 0; return; }
     if (t.closest("#icon-btn") && S.edit) return S.editMode ? setIconPop(!S.iconOpen) : undefined;
@@ -1609,6 +1658,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   });
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !$("#del-dlg").hidden) { e.preventDefault(); return closeDeleteDialog(); }
+    if (e.key === "Escape" && !$("#filter-menu").hidden) { setFilterMenu(false); $("#filter-btn").focus(); return; }
     if (e.key === "Escape" && !$("#sort-menu").hidden) { setSortMenu(false); $("#sort-btn").focus(); return; }
     if (e.key === "Escape") { if (S.lb) closeLb(); else if (S.iconOpen) { setIconPop(false); $("#icon-btn").focus(); } else if (S.open) requestClose(); }
     if (S.lb && document.activeElement !== $("#lb-cap")) {
@@ -1749,6 +1799,23 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     else if (!e.shiftKey && document.activeElement === b) { e.preventDefault(); a.focus(); }
   });
 
+  // filter dropdown
+  let filterCloseT = null;
+  function setFilterMenu(open) {
+    const m = $("#filter-menu"), b = $("#filter-btn");
+    clearTimeout(filterCloseT);
+    b.setAttribute("aria-expanded", String(open));
+    if (open) {
+      setSortMenu(false);
+      m.hidden = false;
+      requestAnimationFrame(() => m.classList.add("open"));
+      setTimeout(() => { const f = m.querySelector("button"); if (f) f.focus({ preventScroll: true }); }, 30);
+    } else {
+      m.classList.remove("open");
+      filterCloseT = setTimeout(() => { m.hidden = true; }, 180);
+    }
+  }
+
   // sort dropdown
   let sortCloseT = null;
   function setSortMenu(open) {
@@ -1756,6 +1823,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     clearTimeout(sortCloseT);
     b.setAttribute("aria-expanded", String(open));
     if (open) {
+      if (!$("#filter-menu").hidden) setFilterMenu(false);
       m.hidden = false;
       requestAnimationFrame(() => m.classList.add("open"));
       const cur = m.querySelector('[aria-checked="true"]') || m.querySelector("button");
