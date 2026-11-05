@@ -1318,7 +1318,6 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
             ${selCell("status", "Status", STATUS.map(([k, l]) => [k, l]), "status")}
             ${selCell("doneBy", "Utføres av", DONE_BY, "person")}
             <label class="cell" for="f-requiresPro"><span class="cell-label lbl-ic">${ic("shield")}Krever fagperson</span><span class="switch"><input id="f-requiresPro" type="checkbox" role="switch" data-k="requiresPro" data-type="bool"${e.requiresPro ? " checked" : ""}><span></span></span></label>
-            ${orderHtml()}
             <label class="cell stack" for="f-dependsOn"><span class="cell-label lbl-ic">${ic("link")}Må gjøres før/etter</span><input id="f-dependsOn" type="text" data-k="dependsOn" value="${esc(e.dependsOn)}" placeholder="F.eks. «Etter el, før veggplater»"></label>
           </div>
         </div>
