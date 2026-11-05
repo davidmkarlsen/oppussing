@@ -146,6 +146,16 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .econ-axis { display: flex; justify-content: space-between; margin-top: 5px; font-size: .75rem; color: var(--fg-2); font-variant-numeric: tabular-nums; }
 .econ-note { margin: 10px 0 0; font-size: .8125rem; color: var(--fg-2); line-height: 1.45; }
 .econ-list { min-width: 0; }
+.stat.econ { position: relative; }
+.econ-toggle {
+  position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border-radius: 50%; border: 0; padding: 0;
+  display: grid; place-items: center; background: var(--fill); color: var(--fg-2); transition: background .15s ease, color .15s ease;
+}
+.econ-toggle svg { width: 16px; height: 16px; transition: transform .25s var(--ease-sheet); }
+.econ-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+@media (hover: hover) { .econ-toggle:hover { color: var(--fg); } }
+.stat.econ:not(.is-open) { grid-template-columns: minmax(0, 1fr); }
+.stat.econ:not(.is-open) .econ-list, .stat.econ:not(.is-open) .econ-note, .stat.econ:not(.is-open) .econ-warn { display: none; }
 .econ-warn { display: flex; align-items: center; gap: 7px; margin: 8px 0 0; font-size: .8125rem; color: var(--fg); }
 .econ-lh { display: flex; justify-content: space-between; font-size: .75rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-2); margin: 2px 0 4px; }
 .er { position: relative; display: block; width: 100%; border: 0; background: transparent; text-align: left; padding: 7px 8px; margin: 0 -8px; width: calc(100% + 16px); border-radius: 9px; transition: background .12s ease; }
@@ -1049,7 +1059,11 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
         <span class="er-tip" aria-hidden="true">Estimat ${esc(kr(t.costMin, t.costMax))} · Brukt ${nf.format(a)} kr</span>
       </button>`;
     }).join("");
-    return `<section class="stat econ" aria-label="Økonomi">
+    const open = !!S.econOpen;
+    return `<section class="stat econ${open ? " is-open" : ""}" aria-label="Økonomi">
+      <button type="button" class="econ-toggle" data-econ aria-expanded="${open}" aria-controls="econ-more" aria-label="${open ? "Skjul detaljer" : "Vis detaljer"}">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 6 8 10.5 12.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
       <div class="econ-sum">
         <div class="k"><span class="k-ic t-tint">${ic("cash")}</span>Økonomi</div>
         <div class="econ-figs">
@@ -1064,7 +1078,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
         <p class="econ-note">${note}${done ? ` Gjenstår ${kr(remMin, remMax)} for oppgavene som ikke er ferdige.` : ""}</p>
         ${overN ? `<p class="econ-warn"><i class="lg lg-spent over"></i>${overN} oppgave${overN === 1 ? "" : "r"} har kostet mer enn høyeste estimat</p>` : ""}
       </div>
-      <div class="econ-list">
+      <div class="econ-list" id="econ-more">
         <div class="econ-lh"><span>Per oppgave</span><span>tusen kr</span></div>
         ${rows}
       </div>
@@ -1735,6 +1749,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   // ---------- events ----------
   document.addEventListener("click", (ev) => {
     const t = ev.target;
+    if (t.closest("[data-econ]")) { S.econOpen = !S.econOpen; renderStats(); const b = $("[data-econ]"); if (b) b.focus({ preventScroll: true }); return; }
     const open = t.closest("[data-open]");
     if (open) return openSheet(open.dataset.open);
     if (t.closest("[data-add]") || t.closest("#add-top")) return addTask();
