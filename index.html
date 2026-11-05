@@ -1283,10 +1283,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
         ${fact("person", "Utføres av", esc(doneBy))}
         ${fact("steps", "Rekkefølge", `Steg ${pos} av ${list.length}`)}
       </div>
-      ${prev || e.dependsOn ? `<div class="view-block"><h3 class="sec-title">Før og etter</h3><div class="view-card">
-        ${prev ? `<p>Kommer etter <span class="emoji">${esc(prev.icon)}</span> ${esc(prev.title)}</p>` : `<p>Første jobb i planen</p>`}
-        ${e.dependsOn ? `<p class="muted">${esc(e.dependsOn)}</p>` : ""}
-      </div></div>` : ""}
+      ${e.dependsOn ? `<div class="view-block"><h3 class="sec-title">Før og etter</h3><div class="view-card"><p>${esc(e.dependsOn)}</p></div></div>` : ""}
       ${e.notes ? `<div class="view-block"><h3 class="sec-title">Notater</h3><div class="view-card"><p class="pre">${linkify(e.notes)}</p></div></div>` : ""}`;
   }
   function renderSheet() {
