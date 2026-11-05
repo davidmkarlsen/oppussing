@@ -201,7 +201,8 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .filter-note { margin: -2px 16px 10px; font-size: .8125rem; color: var(--fg-2); }
 .filter-menu { min-width: 236px; }
 .fm-head { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--fg-2); padding: 6px 10px 4px; }
-.filter-menu { max-height: min(68vh, 560px); overflow-y: auto; overscroll-behavior: contain; min-width: 260px; }
+.filter-menu { min-width: 260px; }
+.sort-menu { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 .fm-head { margin-top: 6px; }
 .fm-t { font-size: .9375rem; }
 .filter-menu .fm-switch { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; padding: 9px 10px; }
@@ -1874,6 +1875,22 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     else if (!e.shiftKey && document.activeElement === b) { e.preventDefault(); a.focus(); }
   });
 
+  // Make an open dropdown fit on screen: scroll its button up if there's too little room, then cap its height
+  function fitMenu(m, btn) {
+    m.style.maxHeight = "";
+    const want = Math.min(m.scrollHeight, 460);
+    const topbarH = $("#topbar").offsetHeight || 52;
+    let r = btn.getBoundingClientRect();
+    if (innerHeight - r.bottom - 22 < want) {
+      const shift = Math.min(r.top - (topbarH + 10), want - (innerHeight - r.bottom - 22));
+      if (shift > 0) { window.scrollBy(0, shift); r = btn.getBoundingClientRect(); }
+    }
+    m.style.maxHeight = Math.max(180, Math.floor(innerHeight - r.bottom - 22)) + "px";
+  }
+  window.addEventListener("resize", () => {
+    if (!$("#filter-menu").hidden) fitMenu($("#filter-menu"), $("#filter-btn"));
+    if (!$("#sort-menu").hidden) fitMenu($("#sort-menu"), $("#sort-btn"));
+  });
   function syncBackdrop() {
     const open = $("#filter-btn").getAttribute("aria-expanded") === "true" || $("#sort-btn").getAttribute("aria-expanded") === "true";
     $("#menu-backdrop").hidden = !open;
@@ -1896,6 +1913,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     if (open) {
       setSortMenu(false);
       m.hidden = false;
+      fitMenu(m, b);
       requestAnimationFrame(() => m.classList.add("open"));
       setTimeout(() => { const f = m.querySelector("button"); if (f) f.focus({ preventScroll: true }); }, 30);
     } else {
@@ -1914,6 +1932,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     if (open) {
       if (!$("#filter-menu").hidden) setFilterMenu(false);
       m.hidden = false;
+      fitMenu(m, b);
       requestAnimationFrame(() => m.classList.add("open"));
       const cur = m.querySelector('[aria-checked="true"]') || m.querySelector("button");
       if (cur) setTimeout(() => cur.focus({ preventScroll: true }), 30);
