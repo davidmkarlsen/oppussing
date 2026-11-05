@@ -739,6 +739,17 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .fact-k { display: flex; align-items: center; gap: 6px; font-size: .8125rem; color: var(--fg-2); }
 .fact-k .ic { font-size: 14px; }
 .fact-v { display: block; font-weight: 600; font-size: 1rem; margin-top: 5px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.fact.price-fact { grid-column: 1 / -1; padding: 13px 14px 12px; }
+.price-fact .econ-figs { margin-top: 8px; }
+.pf-big { font: 700 1.375rem/1.2 var(--font-display); letter-spacing: -0.02em; margin-top: 2px; font-variant-numeric: tabular-nums; }
+.pf-mid { font: 600 1rem/1.3 var(--font-display); margin-top: 5px; font-variant-numeric: tabular-nums; }
+.pf-bar { height: 12px; margin-top: 12px; }
+.pf-note { margin-top: 8px; }
+.pf-wrap { position: relative; padding-top: 12px; }
+.pf-wrap .pf-bar { margin-top: 0; }
+.pf-mark { position: absolute; top: 21px; bottom: -4px; width: 2px; margin-left: -1px; background: var(--fg); border-radius: 1px; box-shadow: 0 0 0 2px var(--surface); }
+.pf-mark span { position: absolute; bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%); white-space: nowrap; font-size: .6875rem; font-weight: 600; color: var(--fg); font-variant-numeric: tabular-nums; }
+.price-fact .pf-wrap:has(.pf-mark) { padding-top: 26px; }
 .fact-s { display: block; font-size: .8125rem; color: var(--fg-2); margin-top: 2px; font-variant-numeric: tabular-nums; }
 .view-block { margin-bottom: 22px; }
 .view-card { background: var(--surface); border-radius: 12px; padding: 13px 16px; font-size: .9375rem; line-height: 1.5; }
@@ -1575,11 +1586,36 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   function linkify(text) {
     return esc(text).replace(/https?:\/\/[^\s<]+/g, (u) => `<a href="${u}" target="_blank" rel="noopener">${u.length > 48 ? u.slice(0, 45) + "…" : u}</a>`);
   }
+  // Price card in the task: actual cost vs. the estimate range, on one scale
+  function priceFact(e) {
+    const lo = num(e.costMin), hi = num(e.costMax), a = num(e.actualCost);
+    const eLo = lo ?? hi, eHi = hi ?? lo;
+    const hasEst = eLo != null;
+    const scale = Math.max(eHi || 0, a || 0, 1);
+    const pct = (v) => Math.max(0, Math.min(100, (v / scale) * 100));
+    const over = a != null && eHi != null && a > eHi;
+    let note;
+    if (a == null) note = hasEst ? "Ingen faktisk kostnad registrert ennå." : "Legg inn estimat og faktisk kostnad med blyanten.";
+    else if (!hasEst) note = "Ingen estimat å sammenligne med.";
+    else if (over) note = `${nf.format(a - eHi)} kr over høyeste estimat.`;
+    else if (a < eLo) note = `${nf.format(eLo - a)} kr under laveste estimat så langt.`;
+    else note = "Innenfor estimatet.";
+    return `<div class="fact price-fact">
+      <span class="fact-k">${ic("tag")}Pris</span>
+      <div class="econ-figs">
+        <div><div class="econ-l"><i class="lg lg-spent${over ? " over" : ""}"></i>Brukt</div><div class="pf-big">${a != null ? nf.format(a) + " kr" : "–"}</div></div>
+        <div><div class="econ-l"><i class="lg lg-range"></i>Estimat</div><div class="pf-mid">${esc(kr(e.costMin, e.costMax))}</div></div>
+      </div>
+      ${hasEst || a != null ? `<div class="pf-wrap"><div class="econ-bar pf-bar" role="img" aria-label="Brukt ${a != null ? nf.format(a) : 0} kr av estimert ${esc(kr(e.costMin, e.costMax))}">
+        ${hasEst ? `<span class="eb-range" style="left:${pct(eLo)}%;width:${Math.max(1.5, pct(eHi) - pct(eLo))}%"></span>` : ""}
+        ${a ? `<span class="eb-spent${over ? " over" : ""}" style="width:${Math.max(1.5, pct(a))}%"></span>` : ""}
+      </div>${over ? `<span class="pf-mark" style="left:${pct(eHi)}%" title="Høyeste estimat"><span>Maks ${nf.format(eHi)} kr</span></span>` : ""}</div>
+      <div class="econ-axis" aria-hidden="true"><span>0 kr</span><span>${nf.format(scale)} kr</span></div>` : ""}
+      <span class="fact-s pf-note">${note}</span>
+    </div>`;
+  }
   function viewHtml() {
     const e = S.edit, st = STATUS_MAP[e.status];
-    const list = orderList();
-    const pos = list.findIndex((t) => t.id === e.id) + 1;
-    const prev = list[pos - 2];
     const doneBy = (DONE_BY.find(([k]) => k === e.doneBy) || [, ""])[1];
     const fact = (icon, label, value, sub = "") => `<div class="fact"><span class="fact-k">${ic(icon)}${label}</span><span class="fact-v">${value}</span>${sub ? `<span class="fact-s">${sub}</span>` : ""}</div>`;
     const spent = num(e.actualCost);
@@ -1591,10 +1627,9 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
       </div>
       ${e.description ? `<p class="view-desc">${esc(e.description)}</p>` : `<p class="view-desc muted">Ingen beskrivelse ennå. Trykk på blyanten for å legge til.</p>`}
       <div class="facts">
-        ${fact("tag", "Pris", esc(kr(e.costMin, e.costMax)), spent != null ? `Brukt ${nf.format(spent)} kr` : "")}
+        ${priceFact(e)}
         ${fact("clock", "Arbeid", esc(days(e.daysMin, e.daysMax) || "Ikke estimert"))}
         ${fact("person", "Utføres av", esc(doneBy))}
-        ${fact("steps", "Rekkefølge", `Steg ${pos} av ${list.length}`)}
       </div>
       ${e.dependsOn ? `<div class="view-block"><h3 class="sec-title">Før og etter</h3><div class="view-card"><p>${esc(e.dependsOn)}</p></div></div>` : ""}
       ${e.notes ? `<div class="view-block"><h3 class="sec-title">Notater</h3><div class="view-card"><p class="pre">${linkify(e.notes)}</p></div></div>` : ""}`;
