@@ -536,6 +536,36 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .ph.add:focus-within { outline: 3px solid color-mix(in srgb, var(--tint) 55%, transparent); outline-offset: -3px; border-radius: 12px; }
 @media (hover: hover) { .ph.add:hover { background: var(--tint-soft); } }
 .ph.add:active { background: var(--tint-soft); }
+/* links */
+.links { display: flex; flex-direction: column; gap: 8px; }
+.lk { display: flex; align-items: stretch; background: var(--surface); border-radius: 12px; overflow: hidden; }
+.lk-main { flex: 1; min-width: 0; display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 12px; align-items: center; padding: 11px 6px 11px 12px; color: inherit; text-decoration: none; transition: background .12s ease; }
+.lk-main:active { background: var(--fill); }
+@media (hover: hover) { .lk-main:hover { background: color-mix(in srgb, var(--fill) 60%, transparent); } }
+.lk-ic { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; font-size: 17px; }
+.lk-ic.t-tint { background: var(--tint-soft); color: var(--tint); }
+.lk-ic.t-mid { background: var(--mid-soft); color: var(--mid); }
+.lk-ic.t-low { background: var(--low-soft); color: var(--low); }
+.lk-ic.t-neutral { background: var(--fill); color: var(--fg-2); }
+.lk-body { min-width: 0; }
+.lk-t { display: block; font-weight: 600; font-size: .9375rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lk-d { display: block; font-size: .8125rem; color: var(--fg-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+.lk-p { font-weight: 600; font-size: .875rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lk-out { width: 14px; height: 14px; color: var(--fg-3); }
+.lk-more { width: 44px; flex: none; border: 0; background: transparent; color: var(--fg-2); display: grid; place-items: center; border-left: 1px solid var(--sep); }
+.lk-more svg { width: 18px; height: 18px; }
+.lk-more:active { background: var(--fill); }
+.lk-add { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; border-radius: 12px; border: 1.5px dashed color-mix(in srgb, var(--tint) 45%, var(--sep)); background: transparent; color: var(--tint); font-weight: 600; font-size: .9375rem; }
+.lk-add .ic { font-size: 16px; }
+.lk-add:active { background: var(--tint-soft); }
+.lk-form { box-shadow: 0 0 0 2px color-mix(in srgb, var(--tint) 40%, transparent); }
+.lk-form .cell.stack input { font-size: 1.0625rem; }
+.lk-types { display: grid; margin: 6px 0 4px; width: 100%; }
+.lk-types button { padding: 7px 4px; font-size: .8125rem; }
+.lk-err { padding: 4px 16px 0; margin: 0; }
+.lk-actions { display: flex; gap: 8px; align-items: center; padding: 10px 12px 12px; border-top: 1px solid var(--sep); }
+.btn.primary { background: var(--tint); color: var(--on-tint); }
+.lk-del { color: var(--high); background: var(--high-soft); }
 .report-seg { display: grid; width: 100%; margin: 4px 0 16px; }
 .report-seg button { padding: 8px 12px; font-size: .9375rem; }
 .report-seg .count { margin-left: 6px; color: var(--fg-2); font-weight: 500; font-variant-numeric: tabular-nums; }
@@ -572,7 +602,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .cell-label { color: var(--fg); }
 .cell.stack { grid-template-columns: 1fr; padding-block: 10px 6px; gap: 2px; }
 .cell.stack .cell-label { font-size: .8125rem; color: var(--fg-2); }
-.cell input[type="text"], .cell textarea, .cell select, .cell input[type="number"] {
+.cell input[type="text"], .cell input[type="url"], .cell textarea, .cell select, .cell input[type="number"] {
   border: 0; background: transparent; outline: none; width: 100%; padding: 0; min-width: 0;
   font-size: 1.0625rem; color: var(--fg);
 }
@@ -898,8 +928,14 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   const DONE_BY = [["selv", "Selv"], ["begge", "Selv + håndverker"], ["handverker", "Håndverker"]];
   const GROUPS = {
     naa: { label: "Nå", intro: "Slik ser det ut i dag. Ta bilder og noter mål, skader og ting du oppdager, så har du dokumentasjon å vise håndverkere." },
-    inspo: { label: "Inspirasjon", intro: "Bilder du liker og lenker til produkter eller løsninger (Finn, Pinterest, nettbutikker). Lim lenker inn i notatfeltet." },
+    inspo: { label: "Inspirasjon", intro: "Bilder av løsninger, farger og materialer du liker." },
     resultat: { label: "Resultat", intro: "Ferdig resultat. Fint å ha for egen del, for forsikring og når huset en gang skal selges." },
+  };
+  const LINK_TYPES = {
+    tilbud: { label: "Tilbud", icon: "tag", cls: "t-mid" },
+    produkt: { label: "Produkt", icon: "cart", cls: "t-tint" },
+    guide: { label: "Guide", icon: "play", cls: "t-low" },
+    annet: { label: "Annet", icon: "link", cls: "t-neutral" },
   };
   const SORT_LABEL = { prio: "Prioritet", score: "Enklest først", cost: "Pris" };
   const SORT_HINT = {
@@ -956,6 +992,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     ["costMin", "costMax", "daysMin", "daysMax", "actualCost"].forEach((k) => (t[k] = num(t[k])));
     t.dependsOn = t.dependsOn || "";
     t.notes = t.notes || "";
+    t.links = Array.isArray(t.links) ? t.links.filter((l) => l && l.url).map((l) => ({ id: l.id || crypto.randomUUID(), url: l.url, title: l.title || "", type: LINK_TYPES[l.type] ? l.type : "annet", price: num(l.price), note: l.note || "", addedAt: l.addedAt || "" })) : [];
     t.groups = t.groups || {};
     for (const g of Object.keys(GROUPS)) {
       const gr = t.groups[g] || {};
@@ -1111,6 +1148,8 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     shield: `<path d="M8 1.8 13 4v3.6c0 3-2.1 5.4-5 6.6-2.9-1.2-5-3.6-5-6.6V4z"/>`,
     link: `<path d="M6.6 9.4 9.4 6.6"/><path d="M7.3 4.4 8.6 3.1a2.6 2.6 0 0 1 3.7 3.7l-1.3 1.3"/><path d="M8.7 11.6 7.4 12.9a2.6 2.6 0 0 1-3.7-3.7L5 7.9"/>`,
     note: `<path d="M3.5 2.5h6.2L12.5 5.3v8.2h-9z"/><path d="M9.5 2.5v3h3M5.6 8.4h4.8M5.6 10.9h3.2"/>`,
+    cart: `<path d="M1.8 2.5h2l1.6 7.6h7.3l1.5-5.4H4.6"/><circle cx="6.2" cy="13" r="1"/><circle cx="12" cy="13" r="1"/>`,
+    play: `<circle cx="8" cy="8" r="5.8"/><path d="M6.7 5.6v4.8L10.6 8z" fill="currentColor" stroke="none"/>`,
     person: `<circle cx="8" cy="5.4" r="2.6"/><path d="M2.8 13.6c.7-2.5 2.7-3.9 5.2-3.9s4.5 1.4 5.2 3.9"/>`,
     steps: `<path d="M6.2 4h7.3M6.2 8h7.3M6.2 12h7.3"/><circle cx="3" cy="4" r=".6" fill="currentColor"/><circle cx="3" cy="8" r=".6" fill="currentColor"/><circle cx="3" cy="12" r=".6" fill="currentColor"/>`,
   };
@@ -1231,6 +1270,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     const txt = (v) => typeof v === "string" && v.trim() !== "";
     if (txt(t.title) || txt(t.description) || txt(t.notes) || txt(t.dependsOn)) return false;
     if (["costMin", "costMax", "daysMin", "daysMax", "actualCost"].some((k) => t[k] != null)) return false;
+    if (t.links && t.links.length) return false;
     return !Object.values(t.groups).some((g) => g.photos.length || txt(g.notes));
   }
   function flushSave() {
@@ -1249,7 +1289,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   function openSheet(id, tab = "oversikt") {
     const t = S.tasks.get(id);
     if (!t) return;
-    S.open = id; S.edit = clone(t); S.tab = tab; S.reportTab = "naa"; S.confirmDelete = false; S.photoErr = "";
+    S.open = id; S.edit = clone(t); S.tab = tab; S.reportTab = "naa"; S.linkForm = null; S.confirmDelete = false; S.photoErr = "";
     setIconPop(false);
     S.rngEdit = { cost: false, days: false };
     S.orderEdit = false;
@@ -1286,16 +1326,16 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     resultat: tbSvg(`<path d="M12 3.2l2.2 1.6 2.7-.1.8 2.6 2.2 1.6-.9 2.6.9 2.6-2.2 1.6-.8 2.6-2.7-.1L12 20.8l-2.2-1.6-2.7.1-.8-2.6-2.2-1.6.9-2.6-.9-2.6 2.2-1.6.8-2.6 2.7.1z"/><path d="m8.9 12.2 2.1 2.1 4.1-4.4"/>`),
   };
   // The "Rapport" tab holds Nå (before) and Resultat (after) as its own sub-tabs
-  const TAB_LABEL = { oversikt: "Oversikt", inspo: "Inspirasjon", rapport: "Rapport" };
+  const TAB_LABEL = { oversikt: "Oversikt", inspo: "Ideer", rapport: "Rapport" };
   function curGroup() { return S.tab === "rapport" ? (S.reportTab || "naa") : S.tab; }
   function renderTabs() {
     const e = S.edit;
     document.querySelectorAll("#tabs button").forEach((b) => {
       const k = b.dataset.tab;
       b.setAttribute("aria-selected", String(k === S.tab));
-      const n = k === "rapport" ? e.groups.naa.photos.length + e.groups.resultat.photos.length : GROUPS[k] ? e.groups[k].photos.length : 0;
+      const n = k === "rapport" ? e.groups.naa.photos.length + e.groups.resultat.photos.length : k === "inspo" ? e.groups.inspo.photos.length + e.links.length : 0;
       b.innerHTML = `<span class="tb-ic">${TAB_ICONS[k]}${n ? `<span class="count">${n}</span>` : ""}</span><span class="tb-l">${TAB_LABEL[k]}</span>`;
-      b.setAttribute("aria-label", TAB_LABEL[k] + (n ? `, ${n} bilde${n === 1 ? "" : "r"}` : ""));
+      b.setAttribute("aria-label", TAB_LABEL[k] + (n ? `, ${n} ${k === "inspo" ? "bilder og lenker" : n === 1 ? "bilde" : "bilder"}` : ""));
     });
   }
 
@@ -1559,6 +1599,68 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
       ${e.dependsOn ? `<div class="view-block"><h3 class="sec-title">Før og etter</h3><div class="view-card"><p>${esc(e.dependsOn)}</p></div></div>` : ""}
       ${e.notes ? `<div class="view-block"><h3 class="sec-title">Notater</h3><div class="view-card"><p class="pre">${linkify(e.notes)}</p></div></div>` : ""}`;
   }
+  // ---------- links (offers, products, guides) on the Ideer tab ----------
+  function linkDomain(u) { try { return new URL(u).hostname.replace(/^www\./, ""); } catch { return u; } }
+  function normUrl(raw) {
+    let u = String(raw || "").trim();
+    if (!u) return null;
+    if (!/^https?:\/\//i.test(u)) u = "https://" + u;
+    try { const x = new URL(u); return /\./.test(x.hostname) ? x.href : null; } catch { return null; }
+  }
+  function linksHtml() {
+    const e = S.edit, f = S.linkForm;
+    const card = (l) => {
+      const T = LINK_TYPES[l.type];
+      if (f && f.id === l.id) return linkFormHtml();
+      return `<div class="lk">
+        <a class="lk-main" href="${esc(l.url)}" target="_blank" rel="noopener noreferrer">
+          <span class="lk-ic ${T.cls}">${ic(T.icon)}</span>
+          <span class="lk-body"><span class="lk-t">${esc(l.title || linkDomain(l.url))}</span><span class="lk-d">${esc(T.label)} · ${esc(linkDomain(l.url))}${l.note ? ` · ${esc(l.note)}` : ""}</span></span>
+          ${l.price != null ? `<span class="lk-p">${nf.format(l.price)} kr</span>` : ""}
+          <svg class="lk-out" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5H3.5v9h9V10M9 3.5h3.5V7M12.3 3.7 7.5 8.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <button type="button" class="lk-more" data-lkedit="${esc(l.id)}" aria-label="Endre lenken ${esc(l.title || linkDomain(l.url))}"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="8" r="1.3" fill="currentColor"/><circle cx="8" cy="8" r="1.3" fill="currentColor"/><circle cx="12.5" cy="8" r="1.3" fill="currentColor"/></svg></button>
+      </div>`;
+    };
+    return `<h3 class="sec-title">Lenker og tilbud</h3>
+      <div class="sec links">
+        ${e.links.map(card).join("")}
+        ${f && !f.id ? linkFormHtml() : `<button type="button" class="lk-add" data-lkadd>${ic("link")}Legg til lenke</button>`}
+        ${!e.links.length && !f ? `<p class="sec-note" style="margin:8px 4px 0">Lagre tilbud, produkter, guider og videoer du finner, med pris og et kort notat.</p>` : ""}
+      </div>`;
+  }
+  function linkFormHtml() {
+    const f = S.linkForm;
+    return `<form class="lk-form cells" id="lk-form" novalidate>
+      <label class="cell stack" for="lk-url"><span class="cell-label lbl-ic">${ic("link")}Adresse</span><input id="lk-url" name="url" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://…" value="${esc(f.url)}"></label>
+      <label class="cell stack" for="lk-title"><span class="cell-label lbl-ic">${ic("title")}Navn (valgfritt)</span><input id="lk-title" name="title" type="text" placeholder="F.eks. «Eikelaminat 25 % rabatt»" value="${esc(f.title)}"></label>
+      <div class="cell stack"><span class="cell-label lbl-ic" id="lk-type-l">${ic("flag")}Type</span>
+        <div class="seg lk-types" role="group" aria-labelledby="lk-type-l">${Object.entries(LINK_TYPES).map(([k, T]) => `<button type="button" data-lktype="${k}" aria-pressed="${f.type === k}">${T.label}</button>`).join("")}</div>
+      </div>
+      <label class="cell" for="lk-price"><span class="cell-label lbl-ic">${ic("tag")}Pris (valgfritt)</span><span class="cell-input"><input id="lk-price" name="price" type="number" inputmode="numeric" min="0" step="any" placeholder="–" value="${esc(f.price)}"><span class="unit">kr</span></span></label>
+      <label class="cell stack" for="lk-note"><span class="cell-label lbl-ic">${ic("note")}Notat (valgfritt)</span><input id="lk-note" name="note" type="text" placeholder="F.eks. «Gjelder til 30. november»" value="${esc(f.note)}"></label>
+      <p class="field-err lk-err" id="lk-err"${f.err ? "" : " hidden"}>${esc(f.err || "")}</p>
+      <div class="lk-actions">
+        ${f.id ? `<button type="button" class="btn lk-del" data-lkdel>Slett</button>` : ""}
+        <span style="flex:1"></span>
+        <button type="button" class="btn" data-lkcancel>Avbryt</button>
+        <button type="submit" class="btn primary">Lagre</button>
+      </div>
+    </form>`;
+  }
+  function focusLinkUrl() { setTimeout(() => { const u = $("#lk-url"); if (u) { u.focus(); u.scrollIntoView({ block: "nearest", behavior: "smooth" }); } }, 30); }
+  function saveLink() {
+    const f = S.linkForm, url = normUrl(f.url);
+    if (!url) { f.err = "Skriv inn en gyldig nettadresse, f.eks. obs.no/laminat."; renderSheet(); focusLinkUrl(); return; }
+    const price = String(f.price).trim() === "" ? null : Number(String(f.price).replace(",", "."));
+    const link = { id: f.id || crypto.randomUUID(), url, title: f.title.trim(), type: f.type, price: isFinite(price) ? price : null, note: f.note.trim(), addedAt: f.addedAt || new Date().toISOString() };
+    const i = S.edit.links.findIndex((l) => l.id === link.id);
+    if (i >= 0) S.edit.links[i] = link; else S.edit.links.push(link);
+    S.linkForm = null;
+    flushSave(); renderSheet();
+    const b = $("[data-lkadd]"); if (b) b.focus({ preventScroll: true });
+  }
+
   function renderSheet() {
     const e = S.edit;
     $("#sheet").dataset.tab = S.tab;
@@ -1617,14 +1719,16 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
         + Array.from({ length: n }, () => `<div class="ph loading"><div class="spinner" aria-label="Laster opp"></div></div>`).join("");
       bodyEl.innerHTML = `
         ${rTabs}
+        ${g === "inspo" ? linksHtml() : ""}
+        ${g === "inspo" ? `<h3 class="sec-title">Bilder</h3>` : ""}
         <div class="sec">
           ${S.photoErr ? `<p class="err-msg" role="alert">${esc(S.photoErr)}</p>` : ""}
           ${tiles || addTile ? `<div class="grid">${tiles}${addTile}</div>` : `<div class="empty-photos">Ingen bilder i «${GROUPS[g].label}» ennå.</div>`}
           ${!gr.photos.length && !n ? `<p class="photo-intro" style="margin-top:10px">${GROUPS[g].intro}</p>` : ""}
         </div>
         <div class="sec">
-          <h3 class="sec-title">Notater · ${GROUPS[g].label}</h3>
-          <div class="cells"><label class="cell stack" for="f-gnotes-${g}"><span class="cell-label lbl-ic">${ic("note")}${g === "inspo" ? "Lenker og ideer" : g === "naa" ? "Tilstand, mål og funn" : "Hva ble gjort, materialer, garanti"}</span><textarea id="f-gnotes-${g}" data-k="groups.${g}.notes" rows="4" placeholder="Skriv her …">${esc(gr.notes)}</textarea></label></div>
+          <h3 class="sec-title">Notater${g === "inspo" ? "" : ` · ${GROUPS[g].label}`}</h3>
+          <div class="cells"><label class="cell stack" for="f-gnotes-${g}"><span class="cell-label lbl-ic">${ic("note")}${g === "inspo" ? "Ideer, mål og spørsmål" : g === "naa" ? "Tilstand, mål og funn" : "Hva ble gjort, materialer, garanti"}</span><textarea id="f-gnotes-${g}" data-k="groups.${g}.notes" rows="4" placeholder="Skriv her …">${esc(gr.notes)}</textarea></label></div>
         </div>`;
       hydrateImages(bodyEl);
     }
@@ -1801,7 +1905,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     }
     if (!$("#filter-menu").hidden && !t.closest("#filter-menu")) setFilterMenu(false);
     const tab = t.closest("#tabs button");
-    if (tab && S.edit) { if (saveTimer) flushSave(); S.tab = tab.dataset.tab; S.photoErr = ""; renderSheet(); $("#sheet-body").scrollTop = 0; return; }
+    if (tab && S.edit) { if (saveTimer) flushSave(); S.tab = tab.dataset.tab; S.photoErr = ""; S.linkForm = null; renderSheet(); $("#sheet-body").scrollTop = 0; return; }
     if (t.closest("#icon-btn") && S.edit) return S.editMode ? setIconPop(!S.iconOpen) : undefined;
     if (t.closest("#edit-toggle") && S.edit) { if (S.editMode && draftNeedsTitle()) return showTitleError(); return setEditMode(!S.editMode); }
     if (t.closest("[data-ordertoggle]") && S.edit) {
@@ -1841,6 +1945,16 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     }
     const ph = t.closest("[data-ph]");
     if (ph && S.edit) return openLb(curGroup(), Number(ph.dataset.ph));
+    if (t.closest("[data-lkadd]") && S.edit) { S.linkForm = { url: "", title: "", type: "tilbud", price: "", note: "" }; renderSheet(); focusLinkUrl(); return; }
+    const lke = t.closest("[data-lkedit]");
+    if (lke && S.edit) { const l = S.edit.links.find((x) => x.id === lke.dataset.lkedit); if (l) { S.linkForm = { ...l, price: l.price ?? "" }; renderSheet(); focusLinkUrl(); } return; }
+    if (t.closest("[data-lkcancel]") && S.edit) { S.linkForm = null; renderSheet(); return; }
+    const lkt = t.closest("[data-lktype]");
+    if (lkt && S.linkForm) { S.linkForm.type = lkt.dataset.lktype; lkt.parentNode.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b === lkt))); return; }
+    if (t.closest("[data-lkdel]") && S.linkForm && S.linkForm.id) {
+      const id = S.linkForm.id, name = S.linkForm.title || linkDomain(S.linkForm.url);
+      return openConfirm({ title: "Slette lenken?", desc: `«${name}» fjernes fra oppgaven.`, confirm: "Slett lenke", onConfirm: () => { S.edit.links = S.edit.links.filter((l) => l.id !== id); S.linkForm = null; flushSave(); renderSheet(); } });
+    }
     const rtab = t.closest("[data-rtab]");
     if (rtab && S.edit) { if (saveTimer) flushSave(); S.reportTab = rtab.dataset.rtab; S.photoErr = ""; renderSheet(); const b = document.querySelector(`[data-rtab="${S.reportTab}"]`); if (b) b.focus({ preventScroll: true }); return; }
     const lbd = t.closest("[data-lbdel]");
@@ -1876,8 +1990,14 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     document.querySelectorAll("#icon-pick button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.icon === v)));
     scheduleSave();
   });
+  $("#sheet-body").addEventListener("submit", (ev) => {
+    if (ev.target.id !== "lk-form") return;
+    ev.preventDefault();
+    saveLink();
+  });
   $("#sheet-body").addEventListener("input", (ev) => {
     const el = ev.target;
+    if (S.linkForm && el.closest && el.closest("#lk-form") && el.name) { S.linkForm[el.name] = el.value; if (el.name === "url" && S.linkForm.err) { S.linkForm.err = ""; const er = $("#lk-err"); if (er) er.hidden = true; } return; }
     if (S.edit && el.dataset.r) {
       const k = el.dataset.scale, r = RANGES[k], sc = SCALES[k];
       const cell = el.closest(".rng");
