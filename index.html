@@ -694,7 +694,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .lb-bottom { padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); flex-direction: column; align-items: stretch; }
 .lb .text-btn { color: #fff; }
 .lb .pos { font-size: .875rem; color: rgba(255,255,255,.7); font-variant-numeric: tabular-nums; }
-.lb-img { flex: 1; min-height: 0; display: grid; place-items: center; padding: 0 8px; position: relative; }
+.lb-img { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 0 8px; position: relative; overflow: hidden; }
 .lb-img img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px; }
 .lb-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(255,255,255,.16); color: #fff; display: grid; place-items: center; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
 .lb-nav svg { width: 18px; height: 18px; }
@@ -870,6 +870,33 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .lk-add input.sr-only { position: absolute; }
 .lk-add { position: relative; cursor: pointer; }
 .lk-add:focus-within { outline: 3px solid color-mix(in srgb, var(--tint) 55%, transparent); outline-offset: 2px; }
+.rent { margin-top: 8px; }
+.hv-big .per { font-size: 1rem; font-weight: 600; color: var(--fg-2); letter-spacing: 0; margin-left: 3px; }
+.rent-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+.rent-stats > div { background: var(--surface-2); border-radius: 10px; padding: 10px 12px; min-width: 0; }
+.rs-k { display: block; font-size: .8125rem; color: var(--fg-2); }
+.rs-v { display: block; font-weight: 600; font-size: 1rem; margin-top: 3px; font-variant-numeric: tabular-nums; }
+.rent-note { margin: 12px 0 0; font-size: .875rem; color: var(--fg-2); line-height: 1.45; }
+.fl-chip { margin-left: 6px; vertical-align: 1px; }
+.chk { width: 14px; height: 14px; flex: none; }
+.chip .chk { width: 12px; height: 12px; margin-left: -2px; }
+.done-note { display: flex; gap: 6px; align-items: flex-start; margin: 6px 0 0; color: var(--done); font-size: .875rem; line-height: 1.45; font-weight: 500; }
+.done-note .chk { margin-top: 2.5px; }
+.tg3-list .done-note { margin: 6px 0 0 15px; color: var(--done); }
+.reno + .reno { margin-top: 10px; }
+.reno-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.reno-h { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; min-width: 0; }
+.reno-h h3 { margin: 0; font: 600 1.0625rem/1.3 var(--font-display, inherit); letter-spacing: -0.01em; }
+.reno-c { text-align: right; flex: none; }
+.reno-cv { display: block; font-weight: 700; font-size: 1.0625rem; font-variant-numeric: tabular-nums; }
+.reno-cs { display: block; font-size: .8125rem; color: var(--fg-2); margin-top: 2px; font-variant-numeric: tabular-nums; }
+.reno-t { margin: 8px 0 0; font-size: .9375rem; line-height: 1.5; color: var(--fg-2); }
+.reno-list { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+.reno-list li { display: flex; gap: 8px; align-items: flex-start; font-size: .9375rem; line-height: 1.4; }
+.reno-list .chk { color: var(--done); margin-top: 3px; }
+.reno-ph-h { display: flex; align-items: center; gap: 7px; margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--sep); font-size: .75rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-2); }
+.reno-n { background: var(--fill); border-radius: 99px; padding: 1px 7px; font-size: .6875rem; letter-spacing: 0; }
+.reno .grid { margin-top: 10px; }
 .h-source { margin: 22px 16px 0; font-size: .8125rem; color: var(--fg-2); line-height: 1.45; }
 .pm-house { border-bottom: 1px solid var(--sep) !important; border-radius: 9px 9px 0 0 !important; margin-bottom: 4px; }
 .sort-menu .pm-house { grid-template-columns: 0 1fr; padding: 10px 10px 12px; }
@@ -1294,6 +1321,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     sun: `<circle cx="8" cy="8" r="2.8"/><path d="M8 1.5v1.6M8 12.9v1.6M1.5 8h1.6M12.9 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M3.4 12.6l1.1-1.1M11.5 4.5l1.1-1.1"/>`,
     layers: `<path d="M8 2 14 5.2 8 8.4 2 5.2z"/><path d="m2 8.2 6 3.2 6-3.2M2 11.1l6 3.2 6-3.2"/>`,
     doc: `<path d="M4 1.8h5.3L12.5 5v9.2H4z"/><path d="M9.2 1.8V5h3.3M6 8.2h4.2M6 10.7h4.2"/>`,
+    key: `<circle cx="5.2" cy="10.8" r="2.7"/><path d="m7.2 8.9 5.6-5.6M10.8 5.3l1.6 1.6M9.4 6.7l1.3 1.3"/>`,
     upload: `<path d="M8 11V3M4.8 6.2 8 3l3.2 3.2M3 11.5v1.7h10v-1.7"/>`,
     cart: `<path d="M1.8 2.5h2l1.6 7.6h7.3l1.5-5.4H4.6"/><circle cx="6.2" cy="13" r="1"/><circle cx="12" cy="13" r="1"/>`,
     play: `<circle cx="8" cy="8" r="5.8"/><path d="M6.7 5.6v4.8L10.6 8z" fill="currentColor" stroke="none"/>`,
@@ -1972,36 +2000,45 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     }
   }
 
-  // lightbox
-  function openLb(g, i) {
-    S.lb = { g, i }; S.lbConfirm = false;
+  // lightbox: shows a task photo group ({ g, i }) or a house renovation's photos ({ reno, i })
+  function lbCtx() {
+    const L = S.lb; if (!L) return null;
+    if (L.reno) {
+      const h = S.house || {}; const r = (h.renovations || []).find((x) => x.id === L.reno);
+      return { photos: housePhotos(L.reno), label: r ? r.title : "Bilder", hint: "Legg til bildetekst, f.eks. «Stuen etter oppussing»" };
+    }
+    if (!S.edit) return null;
+    return { photos: S.edit.groups[L.g].photos, label: GROUPS[L.g].label, hint: "Legg til bildetekst, f.eks. «Fuktmerke bak kjøleskap»" };
+  }
+  function openLb(ctx) {
+    S.lb = ctx; S.lbConfirm = false;
     const lb = $("#lb"); lb.hidden = false;
     renderLb();
     requestAnimationFrame(() => lb.classList.add("open"));
   }
   function closeLb() {
     if (!S.lb) return;
-    const g = S.lb.g;
+    const L = S.lb;
     S.lb = null;
     const lb = $("#lb"); lb.classList.remove("open");
     setTimeout(() => { if (!S.lb) lb.hidden = true; }, 230);
-    if (S.edit && curGroup() === g) renderSheet();
+    if (L.reno) { if (S.view === "house") renderHouse(); }
+    else if (S.edit && curGroup() === L.g) renderSheet();
   }
   function renderLb() {
-    const { g, i } = S.lb;
-    const photos = S.edit.groups[g].photos;
-    const p = photos[i];
+    const c = lbCtx(); if (!c) return closeLb();
+    const i = S.lb.i, photos = c.photos, p = photos[i];
     if (!p) return closeLb();
     const lbImg = $("#lb-img");
     lbImg.removeAttribute("src");
-    photoUrls([p.id]).then((u) => { if (S.lb && S.edit && S.edit.groups[g].photos[S.lb.i] === p && u[p.id]) lbImg.src = u[p.id]; });
-    $("#lb-img").alt = p.caption || "";
-    $("#lb-pos").textContent = `${GROUPS[g].label} · ${i + 1} av ${photos.length}`;
+    photoUrls([p.id]).then((u) => { const cc = lbCtx(); if (cc && cc.photos[S.lb.i] && cc.photos[S.lb.i].id === p.id && u[p.id]) lbImg.src = u[p.id]; });
+    lbImg.alt = p.caption || "";
+    $("#lb-pos").textContent = `${c.label} · ${i + 1} av ${photos.length}`;
     const cap = $("#lb-cap");
     if (document.activeElement !== cap) cap.value = p.caption || "";
     cap.readOnly = false;
     cap.hidden = false;
-    cap.placeholder = "Legg til bildetekst, f.eks. «Fuktmerke bak kjøleskap»";
+    cap.placeholder = c.hint;
     $("#lb-prev").hidden = i === 0;
     $("#lb-next").hidden = i >= photos.length - 1;
     const added = p.addedAt ? new Date(p.addedAt).toLocaleDateString("nb-NO", { day: "numeric", month: "short", year: "numeric" }) : "";
@@ -2010,16 +2047,17 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
       : `<span class="pos">${added ? "Lagt til " + added : ""}</span>${S.assets ? `<button type="button" class="del" data-lbdel="ask">Slett bilde</button>` : ""}`;
   }
   async function deletePhoto() {
-    const { g, i } = S.lb;
-    const p = S.edit.groups[g].photos[i];
+    const c = lbCtx(); if (!c) return;
+    const i = S.lb.i, p = c.photos[i];
     if (!p) return;
-    S.edit.groups[g].photos.splice(i, 1);
-    flushSave();
+    c.photos.splice(i, 1);
+    if (S.lb.reno) persist("house", clone(S.house)); else flushSave();
     try { await S.assets.delete(p.id); } catch {}
     S.lbConfirm = false;
-    if (!S.edit.groups[g].photos.length) return closeLb();
-    S.lb.i = Math.min(i, S.edit.groups[g].photos.length - 1);
-    renderLb(); renderTabs();
+    if (!c.photos.length) return closeLb();
+    S.lb.i = Math.min(i, c.photos.length - 1);
+    renderLb();
+    if (S.lb.reno) renderHouse(); else renderTabs();
   }
 
   async function deleteTask() {
@@ -2132,7 +2170,9 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
       return;
     }
     const ph = t.closest("[data-ph]");
-    if (ph && S.edit) return openLb(curGroup(), Number(ph.dataset.ph));
+    if (ph && S.edit) return openLb({ g: curGroup(), i: Number(ph.dataset.ph) });
+    const hph = t.closest("[data-hph]");
+    if (hph) return openLb({ reno: hph.dataset.reno, i: Number(hph.dataset.hph) });
     if (t.closest("[data-lkadd]") && S.edit) { S.linkForm = { url: "", title: "", type: "tilbud", price: "", note: "" }; renderSheet(); focusLinkUrl(); return; }
     const lke = t.closest("[data-lkedit]");
     if (lke && S.edit) { const l = S.edit.links.find((x) => x.id === lke.dataset.lkedit); if (l) { S.linkForm = { ...l, price: l.price ?? "" }; renderSheet(); focusLinkUrl(); } return; }
@@ -2154,9 +2194,10 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   $("#lb-prev").addEventListener("click", () => { if (S.lb && S.lb.i > 0) { S.lb.i--; S.lbConfirm = false; renderLb(); } });
   $("#lb-next").addEventListener("click", () => { if (S.lb) { S.lb.i++; S.lbConfirm = false; renderLb(); } });
   $("#lb-cap").addEventListener("input", (e) => {
-    if (!S.lb || !S.edit) return;
-    const p = S.edit.groups[S.lb.g].photos[S.lb.i];
-    if (p) { p.caption = e.target.value; scheduleSave(); }
+    const c = lbCtx(); if (!c) return;
+    const p = c.photos[S.lb.i]; if (!p) return;
+    p.caption = e.target.value;
+    if (S.lb.reno) saveHouseCaption(S.lb.reno, p.id, p.caption); else scheduleSave();
   });
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !$("#del-dlg").hidden) { e.preventDefault(); return closeDeleteDialog(); }
@@ -2379,14 +2420,17 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
         ${h.summary ? `<p class="h-summary">${esc(h.summary)}</p>` : ""}
       </section>
       ${valueHtml(h)}
+      ${rentalHtml(h)}
       ${factsHtml(h)}
       ${floorsHtml(h)}
+      ${renosHtml(h)}
       ${conditionHtml(h)}
-      ${listCard("Bygg og tekniske anlegg", "Slik huset var ved kjøp, ifølge tilstandsrapporten.", h.systems)}
+      ${listCard("Bygg og tekniske anlegg", "Fra tilstandsrapporten ved kjøp, med det som er gjort siden.", h.systems)}
       ${listCard("Forhold og kostnader", "", h.conditions)}
       ${docsHtml(h)}
       ${h.sources ? `<p class="h-source">Kilder: ${esc(h.sources)}</p>` : ""}`;
     hydrateDocs();
+    hydrateImages(el);
   }
 
   function valueHtml(h) {
@@ -2429,7 +2473,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     return `<h2 class="sec-title h-sec">Arealer per etasje</h2><section class="hcard floors">
       <div class="fl-legend"><span><i class="lg lg-spent"></i>Innvendig (BRA-i)</span><span><i class="lg lg-range"></i>Terrasse/balkong</span></div>
       ${fl.map((f) => `<div class="fl">
-        <div class="fl-top"><span class="fl-n">${esc(f.name)}</span><span class="fl-v">${f.bra} m²${f.outdoor ? ` <span>+ ${f.outdoor} m² ${esc(f.outdoorLabel || "ute")}</span>` : ""}</span></div>
+        <div class="fl-top"><span class="fl-n">${esc(f.name)}${f.status ? ` <span class="chip s-ferdig fl-chip">${esc(f.status)}</span>` : ""}</span><span class="fl-v">${f.bra} m²${f.outdoor ? ` <span>+ ${f.outdoor} m² ${esc(f.outdoorLabel || "ute")}</span>` : ""}</span></div>
         <div class="fl-bar" aria-hidden="true"><span class="fl-in" style="width:${(f.bra / max) * 100}%"></span>${f.outdoor ? `<span class="fl-out" style="width:${(f.outdoor / max) * 100}%"></span>` : ""}</div>
         ${f.rooms ? `<p class="fl-r">${esc(f.rooms)}</p>` : ""}
       </div>`).join("")}
@@ -2437,25 +2481,110 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     </section>`;
   }
 
+  const CHECK = `<svg class="chk" viewBox="0 0 16 16" aria-hidden="true"><path d="m3.6 8.4 2.8 2.8 6-6.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const doneNote = (d) => (d ? `<p class="done-note">${CHECK}<span>${esc(d)}</span></p>` : "");
   function conditionHtml(h) {
-    const tg3 = h.tg3 || [], tg2 = h.tg2 || [];
+    const tg3 = h.tg3 || [], tg2 = (h.tg2 || []).map((t) => (typeof t === "string" ? { text: t } : t));
     if (!tg3.length && !tg2.length) return "";
     const lo = tg3.reduce((s, t) => s + (t.costMin || 0), 0), hi = tg3.reduce((s, t) => s + (t.costMax || 0), 0);
+    const nDone = tg3.filter((t) => t.done).length + tg2.filter((t) => t.done).length;
     return `<h2 class="sec-title h-sec">Tilstand ved kjøp</h2><section class="hcard tg">
       <div class="tg-head">
-        ${tg3.length ? `<span class="chip tg3c">${tg3.length} × TG3</span>` : ""}${tg2.length ? `<span class="chip tg2c">${tg2.length} × TG2</span>` : ""}
+        ${tg3.length ? `<span class="chip tg3c">${tg3.length} × TG3</span>` : ""}${tg2.length ? `<span class="chip tg2c">${tg2.length} × TG2</span>` : ""}${nDone ? `<span class="chip s-ferdig">${CHECK}Arbeid utført på ${nDone}</span>` : ""}
         <span class="tg-src">Tilstandsrapport, des. 2024</span>
       </div>
       ${tg3.length ? `<p class="tg-sum">Store eller alvorlige avvik (TG3), anslått utbedring <strong>${nf.format(lo)}–${nf.format(hi)} kr</strong>.</p>
-      <ul class="tg3-list">${tg3.map((t) => `<li><div class="tg3-top"><span class="tg3-p">${esc(t.part)}</span>${t.costMin ? `<span class="tg3-c">${kShort(t.costMin)}–${kShort(t.costMax)} k</span>` : ""}</div><p>${esc(t.text)}</p></li>`).join("")}</ul>` : ""}
-      ${tg2.length ? `<details class="hdetails"><summary>Vis ${tg2.length} avvik med TG2</summary><ul class="tg2-list">${tg2.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></details>` : ""}
+      <ul class="tg3-list">${tg3.map((t) => `<li><div class="tg3-top"><span class="tg3-p">${esc(t.part)}</span>${t.costMin ? `<span class="tg3-c">${kShort(t.costMin)}–${kShort(t.costMax)} k</span>` : ""}</div><p>${esc(t.text)}</p>${doneNote(t.done)}</li>`).join("")}</ul>` : ""}
+      ${tg2.length ? `<details class="hdetails"><summary>Vis ${tg2.length} avvik med TG2</summary><ul class="tg2-list">${tg2.map((t) => `<li>${esc(t.text)}${doneNote(t.done)}</li>`).join("")}</ul></details>` : ""}
     </section>`;
   }
 
   function listCard(title, sub, items) {
     if (!(items || []).length) return "";
     return `<h2 class="sec-title h-sec">${esc(title)}</h2>${sub ? `<p class="sec-note h-subnote">${esc(sub)}</p>` : ""}
-      <div class="cells hlist">${items.map((it) => `<div class="cell stack"><span class="cell-label">${esc(it.label)}</span><span class="hl-t">${esc(it.text)}</span></div>`).join("")}</div>`;
+      <div class="cells hlist">${items.map((it) => `<div class="cell stack"><span class="cell-label">${esc(it.label)}</span><span class="hl-t">${esc(it.text)}</span>${doneNote(it.now)}</div>`).join("")}</div>`;
+  }
+
+  function rentalHtml(h) {
+    const r = h.rental; if (!r || !num(r.rent)) return "";
+    const year = r.rent * 12;
+    const bought = (h.values || []).find((v) => /kjøp/i.test(v.label));
+    return `<section class="hcard rent" aria-labelledby="hr-t">
+      <div class="k"><span class="k-ic t-done">${ic("key")}</span><span id="hr-t">Utleie${r.unit ? " · " + esc(r.unit) : ""}</span></div>
+      <div class="hv-big">${nf.format(r.rent)} kr<span class="per">/mnd</span></div>
+      ${r.power ? `<div class="hv-sub">I tillegg ${nf.format(r.power)} kr/mnd a konto for strøm</div>` : ""}
+      <div class="rent-stats">
+        <div><span class="rs-k">Leie per år</span><span class="rs-v">${nf.format(year)} kr</span></div>
+        ${bought ? `<div><span class="rs-k">Av kjøpesummen</span><span class="rs-v">${(year / bought.amount * 100).toLocaleString("nb-NO", { maximumFractionDigits: 1 })} %</span></div>` : ""}
+      </div>
+      ${r.note ? `<p class="rent-note">${esc(r.note)}</p>` : ""}
+    </section>`;
+  }
+
+  function housePhotos(renoId) {
+    const h = S.house; if (!h) return [];
+    if (!h.photos || typeof h.photos !== "object" || Array.isArray(h.photos)) h.photos = {};
+    if (!Array.isArray(h.photos[renoId])) h.photos[renoId] = [];
+    return h.photos[renoId];
+  }
+  function renosHtml(h) {
+    const list = h.renovations || [];
+    if (!list.length) return "";
+    const busyAll = S.housePhotoBusy || {};
+    return `<h2 class="sec-title h-sec">Utført oppussing</h2>${list.map((r) => {
+      const photos = ((h.photos || {})[r.id]) || [];
+      const busy = busyAll[r.id] || 0;
+      const months = h.rental && num(h.rental.rent) && r.cost && r.area && h.rental.unit === r.area ? r.cost / h.rental.rent : null;
+      const tiles = photos.map((p, i) => `<button type="button" class="ph" data-hph="${i}" data-reno="${esc(r.id)}" aria-label="${esc(p.caption || "Bilde " + (i + 1))}"><img data-path="${esc(p.id)}" alt="${esc(p.caption || "")}" loading="lazy" onerror="this.parentNode.classList.add('broken');this.remove()">${p.caption ? `<span class="cap">${esc(p.caption)}</span>` : ""}</button>`).join("")
+        + Array.from({ length: busy }, () => `<div class="ph loading" aria-label="Laster opp"><span class="spinner"></span></div>`).join("");
+      const add = S.assets ? `<label class="ph add" title="Legg til bilder"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg><span>Legg til</span><input type="file" accept="image/*" multiple data-hupload="${esc(r.id)}" aria-label="Legg til bilder av ${esc(r.title)}"></label>` : "";
+      return `<section class="hcard reno" aria-label="${esc(r.title)}">
+        <div class="reno-top">
+          <div class="reno-h"><h3>${esc(r.title)}</h3>${r.status ? `<span class="chip s-ferdig">${esc(r.status)}</span>` : ""}</div>
+          ${r.cost ? `<div class="reno-c"><span class="reno-cv">${r.costApprox ? "ca. " : ""}${nf.format(r.cost)} kr</span>${months ? `<span class="reno-cs">≈ ${months.toLocaleString("nb-NO", { maximumFractionDigits: 1 })} mnd. leie</span>` : ""}</div>` : ""}
+        </div>
+        ${r.text ? `<p class="reno-t">${esc(r.text)}</p>` : ""}
+        ${(r.items || []).length ? `<ul class="reno-list">${r.items.map((it) => `<li>${CHECK}<span>${esc(it)}</span></li>`).join("")}</ul>` : ""}
+        <div class="reno-ph-h"><span>Bilder</span>${photos.length ? `<span class="reno-n">${photos.length}</span>` : ""}</div>
+        <div class="grid">${tiles}${add}</div>
+        ${S.housePhotoErr && S.housePhotoErr.reno === r.id ? `<p class="err-msg" role="alert">${esc(S.housePhotoErr.msg)}</p>` : ""}
+      </section>`;
+    }).join("")}`;
+  }
+  async function uploadHousePhotos(renoId, files) {
+    if (!sb || !S.house) return;
+    S.housePhotoErr = null;
+    S.housePhotoBusy = S.housePhotoBusy || {};
+    S.housePhotoBusy[renoId] = (S.housePhotoBusy[renoId] || 0) + files.length;
+    renderHouse();
+    for (const file of files) {
+      try {
+        const { blob, type } = await prepImage(file);
+        const ext = type === "image/png" ? "png" : type === "image/webp" ? "webp" : "jpg";
+        const path = `house/${renoId}/${crypto.randomUUID()}.${ext}`;
+        const { error } = await sb.storage.from(BUCKET).upload(path, blob, { contentType: type, upsert: false });
+        if (error) { const m = String(error.message || ""); throw fail(/size|large|exceed/i.test(m) ? "too_large" : /mime|type/i.test(m) ? "unsupported_type" : "upstream_error", m); }
+        housePhotos(renoId).push({ id: path, caption: "", addedAt: new Date().toISOString() });
+        persist("house", clone(S.house));
+      } catch (e) {
+        S.housePhotoErr = { reno: renoId, msg: UPLOAD_ERR[e && e.code] || "Opplastingen feilet. Prøv igjen." };
+      } finally {
+        S.housePhotoBusy[renoId] = Math.max(0, S.housePhotoBusy[renoId] - 1);
+        if (S.view === "house") renderHouse();
+      }
+    }
+  }
+  let capTimer = null, capPending = null;
+  function saveHouseCaption(reno, id, caption) {
+    // Apply to the newest house row at save time, so a realtime echo can't undo a caption being typed.
+    capPending = { reno, id, caption };
+    clearTimeout(capTimer);
+    capTimer = setTimeout(() => {
+      const c = capPending; capPending = null; if (!c || !S.house) return;
+      const p = housePhotos(c.reno).find((x) => x.id === c.id); if (!p) return;
+      p.caption = c.caption; persist("house", clone(S.house));
+      if (!S.lb && S.view === "house") renderHouse();
+    }, 600);
   }
 
   function docsHtml(h) {
@@ -2520,7 +2649,11 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
       try { await sb.storage.from("docs").remove([id]); } catch {}
     } });
   }
-  document.addEventListener("change", (ev) => { if (ev.target.id === "f-doc") { const fs = [...ev.target.files]; ev.target.value = ""; if (fs.length) uploadDocs(fs); } });
+  document.addEventListener("change", (ev) => {
+    if (ev.target.id === "f-doc") { const fs = [...ev.target.files]; ev.target.value = ""; if (fs.length) uploadDocs(fs); }
+    const hu = ev.target.closest && ev.target.closest("[data-hupload]");
+    if (hu) { const fs = [...hu.files]; const reno = hu.dataset.hupload; hu.value = ""; if (fs.length) uploadHousePhotos(reno, fs); }
+  });
 
   // ---------- projects (all under Villa el mansion) ----------
   function projectList() {
