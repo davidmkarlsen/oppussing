@@ -788,6 +788,93 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .view-card p + p { margin-top: 8px; }
 .view-card a { color: var(--tint); }
 .pre { white-space: pre-wrap; }
+/* house page */
+.home-link { border: 0; background: transparent; padding: 0; font: inherit; color: inherit; text-align: left; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (hover: hover) { .home-link:hover { color: var(--tint); } }
+.topbar.scrolled .home-link { pointer-events: none; }
+.back-link { display: inline-flex; align-items: center; gap: 4px; border: 0; background: transparent; color: var(--tint); font-weight: 500; font-size: 1rem; padding: 14px 4px 0 0; margin-left: -4px; }
+.back-link svg { width: 16px; height: 16px; }
+.back-link:active { opacity: .5; }
+.house .hero.house-hero { padding-top: 10px; }
+.h-addr { color: var(--fg-2); font-size: .9375rem; }
+.hero .h-summary { color: var(--fg); font-size: 1rem; line-height: 1.5; margin-top: 12px; max-width: 62ch; }
+.h-sec { margin: 26px 16px 8px; }
+.h-subnote { margin: -2px 16px 10px; }
+.hcard { background: var(--surface); border-radius: 14px; padding: 16px; box-shadow: var(--shadow); }
+.hcard .k { font-size: .75rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--fg-2); display: flex; align-items: center; gap: 7px; }
+.hv-big { font: 700 2rem/1.1 var(--font-display); letter-spacing: -0.03em; margin-top: 10px; font-variant-numeric: tabular-nums; }
+.hv-sub { color: var(--fg-2); font-size: .875rem; margin-top: 4px; }
+.hv-delta { color: var(--done); font-weight: 600; }
+.hv-delta.neg { color: var(--high); }
+.vchart { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 14px; height: 190px; margin-top: 18px; align-items: end; }
+.vcol { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; outline: none; }
+.vval { font-size: .8125rem; font-weight: 600; font-variant-numeric: tabular-nums; margin-bottom: 5px; }
+.vtrack { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
+.vbar { width: min(64px, 80%); height: calc((100% - 24px) * var(--p)); background: color-mix(in srgb, var(--tint) 30%, var(--surface)); border-radius: 8px 8px 3px 3px; flex: none; }
+.vcol.last .vbar { background: var(--tint); }
+.vlab { font-size: .75rem; color: var(--fg); text-align: center; line-height: 1.3; margin-top: 7px; min-height: 2.6em; }
+.vlab span { color: var(--fg-2); }
+.vtip { position: absolute; bottom: calc(100% - 20px); left: 50%; transform: translate(-50%, 4px); white-space: nowrap; background: var(--fg); color: var(--bg); font-size: .75rem; padding: 5px 9px; border-radius: 7px; opacity: 0; pointer-events: none; transition: opacity .12s ease, transform .12s ease; z-index: 2; }
+@media (hover: hover) { .vcol:hover .vtip { opacity: 1; transform: translate(-50%, 0); } }
+.vcol:focus-visible .vtip { opacity: 1; transform: translate(-50%, 0); }
+.vcol:first-child .vtip { left: 0; transform: translate(0, 4px); }
+.vcol:last-child .vtip { left: auto; right: 0; transform: translate(0, 4px); }
+@media (hover: hover) { .vcol:first-child:hover .vtip, .vcol:last-child:hover .vtip { transform: none; } }
+.hv-quote { margin: 16px 0 0; font-size: .9375rem; line-height: 1.5; color: var(--fg); }
+.hv-quote span { display: block; color: var(--fg-2); font-size: .8125rem; margin-top: 4px; }
+.hdetails { margin-top: 14px; border-top: 1px solid var(--sep); padding-top: 10px; }
+.hdetails summary { cursor: pointer; color: var(--tint); font-weight: 600; font-size: .9375rem; list-style: none; display: flex; align-items: center; gap: 6px; }
+.hdetails summary::-webkit-details-marker { display: none; }
+.hdetails summary::after { content: ""; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translate(-2px, -2px); transition: transform .2s ease; }
+.hdetails[open] summary::after { transform: rotate(225deg) translate(-2px, -2px); }
+.comp { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.comp li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; }
+.c-a { font-weight: 600; font-size: .9375rem; }
+.c-m { grid-column: 1; color: var(--fg-2); font-size: .8125rem; }
+.c-p { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-weight: 600; font-size: .9375rem; font-variant-numeric: tabular-nums; }
+.hfacts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 720px) { .hfacts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.hfact { background: var(--surface); border-radius: 12px; padding: 12px 14px; min-width: 0; box-shadow: var(--shadow); }
+.floors .fl + .fl { margin-top: 16px; }
+.fl-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .8125rem; color: var(--fg-2); margin-bottom: 14px; }
+.fl-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.fl-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.fl-n { font-weight: 600; }
+.fl-v { font-variant-numeric: tabular-nums; font-weight: 600; font-size: .9375rem; }
+.fl-v span { color: var(--fg-2); font-weight: 500; font-size: .8125rem; }
+.fl-bar { display: flex; gap: 2px; height: 12px; margin-top: 7px; }
+.fl-in { background: var(--tint); border-radius: 99px 3px 3px 99px; }
+.fl-out { background: color-mix(in srgb, var(--tint) 26%, var(--surface)); border-radius: 3px 99px 99px 3px; }
+.fl-in:last-child { border-radius: 99px; }
+.fl-r { margin: 7px 0 0; color: var(--fg-2); font-size: .875rem; line-height: 1.45; }
+.fl-sum { margin: 16px 0 0; padding-top: 12px; border-top: 1px solid var(--sep); font-size: .875rem; color: var(--fg-2); }
+.tg-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.chip.tg3c { background: var(--high-soft); color: var(--high); }
+.chip.tg2c { background: var(--mid-soft); color: var(--mid); }
+.tg-src { margin-left: auto; font-size: .8125rem; color: var(--fg-2); }
+.tg-sum { margin: 12px 0 0; font-size: .9375rem; line-height: 1.45; }
+.tg-sum strong { font-variant-numeric: tabular-nums; }
+.tg3-list, .tg2-list { list-style: none; margin: 12px 0 0; padding: 0; }
+.tg3-list li { padding: 11px 0; border-top: 1px solid var(--sep); }
+.tg3-top { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+.tg3-p { font-weight: 600; font-size: .9375rem; display: inline-flex; align-items: center; gap: 7px; }
+.tg3-p::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--high); flex: none; }
+.tg3-c { font-size: .8125rem; font-weight: 600; color: var(--fg-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tg3-list p { margin: 3px 0 0 15px; color: var(--fg-2); font-size: .875rem; line-height: 1.45; }
+.tg2-list li { position: relative; padding: 7px 0 7px 15px; font-size: .875rem; line-height: 1.45; color: var(--fg); }
+.tg2-list li::before { content: ""; position: absolute; left: 0; top: 14px; width: 7px; height: 7px; border-radius: 50%; background: var(--mid); }
+.hlist .cell.stack { padding-block: 11px; gap: 3px; }
+.hl-t { font-size: .9375rem; line-height: 1.45; overflow-wrap: anywhere; }
+.docs { display: flex; flex-direction: column; gap: 8px; }
+.lk-ic.t-high { background: var(--high-soft); color: var(--high); }
+.lk-add input.sr-only { position: absolute; }
+.lk-add { position: relative; cursor: pointer; }
+.lk-add:focus-within { outline: 3px solid color-mix(in srgb, var(--tint) 55%, transparent); outline-offset: 2px; }
+.h-source { margin: 22px 16px 0; font-size: .8125rem; color: var(--fg-2); line-height: 1.45; }
+.pm-house { border-bottom: 1px solid var(--sep) !important; border-radius: 9px 9px 0 0 !important; margin-bottom: 4px; }
+.sort-menu .pm-house { grid-template-columns: 0 1fr; padding: 10px 10px 12px; }
+.pm-house .pm-row { grid-template-columns: 22px minmax(0, 1fr) auto; }
+.pm-chev { width: 7px; height: 12px; color: var(--fg-3); }
 /* login */
 .auth { min-height: 100vh; min-height: 100dvh; display: grid; place-items: center; padding: 24px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px)); }
 .auth-card { width: min(400px, 100%); background: var(--surface); border-radius: 18px; padding: 28px 22px 22px; box-shadow: var(--shadow); text-align: center; }
@@ -843,7 +930,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 
 <header class="topbar" id="topbar">
   <div class="wrap">
-    <span class="mini"><span class="m-home">Villa el mansion</span><span class="m-proj" id="mini-title" aria-hidden="true">Oppussing 1. etasje</span></span>
+    <span class="mini"><button type="button" class="m-home home-link" data-house-go>Villa el mansion</button><span class="m-proj" id="mini-title" aria-hidden="true">Oppussing 1. etasje</span></span>
     <div class="top-actions">
     <button class="signout" id="signout" type="button" hidden>Logg ut</button>
     </div>
@@ -884,6 +971,8 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     <div id="list"></div>
   </section>
 </main>
+
+<main class="wrap house" id="house-view" hidden aria-labelledby="house-title"></main>
 
 <div class="menu-backdrop" id="menu-backdrop" hidden></div>
 
@@ -1196,6 +1285,16 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     shield: `<path d="M8 1.8 13 4v3.6c0 3-2.1 5.4-5 6.6-2.9-1.2-5-3.6-5-6.6V4z"/>`,
     link: `<path d="M6.6 9.4 9.4 6.6"/><path d="M7.3 4.4 8.6 3.1a2.6 2.6 0 0 1 3.7 3.7l-1.3 1.3"/><path d="M8.7 11.6 7.4 12.9a2.6 2.6 0 0 1-3.7-3.7L5 7.9"/>`,
     note: `<path d="M3.5 2.5h6.2L12.5 5.3v8.2h-9z"/><path d="M9.5 2.5v3h3M5.6 8.4h4.8M5.6 10.9h3.2"/>`,
+    calendar: `<rect x="2.5" y="3.5" width="11" height="10" rx="1.8"/><path d="M2.5 6.8h11M5.5 2v3M10.5 2v3"/>`,
+    plot: `<path d="M2 4.2 6 2.6l4 1.6 4-1.6v9.2L10 13.4l-4-1.6-4 1.6z"/><path d="M6 2.6v9.2M10 4.2v9.2"/>`,
+    area: `<rect x="2.5" y="2.5" width="11" height="11" rx="1.5"/><path d="M2.5 6h2M2.5 9.5h2M6 2.5v2M9.5 2.5v2"/>`,
+    bed: `<path d="M1.8 12.5V4.5M1.8 9.5h12.4v3M14.2 9.5V8a2 2 0 0 0-2-2H7.5v3.5"/><circle cx="4.6" cy="7.6" r="1.3"/>`,
+    bath: `<path d="M2 8h12v1.5a3.5 3.5 0 0 1-3.5 3.5h-5A3.5 3.5 0 0 1 2 9.5zM4 8V3.8a1.6 1.6 0 0 1 3.1-.5M5 13l-.8 1.2M11 13l.8 1.2"/>`,
+    car: `<path d="M2.5 10.5V8.3l1.4-3.4a1.5 1.5 0 0 1 1.4-.9h5.4a1.5 1.5 0 0 1 1.4.9l1.4 3.4v2.2zM2.5 8.3h11"/><circle cx="5" cy="10.5" r="1.2"/><circle cx="11" cy="10.5" r="1.2"/>`,
+    sun: `<circle cx="8" cy="8" r="2.8"/><path d="M8 1.5v1.6M8 12.9v1.6M1.5 8h1.6M12.9 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M3.4 12.6l1.1-1.1M11.5 4.5l1.1-1.1"/>`,
+    layers: `<path d="M8 2 14 5.2 8 8.4 2 5.2z"/><path d="m2 8.2 6 3.2 6-3.2M2 11.1l6 3.2 6-3.2"/>`,
+    doc: `<path d="M4 1.8h5.3L12.5 5v9.2H4z"/><path d="M9.2 1.8V5h3.3M6 8.2h4.2M6 10.7h4.2"/>`,
+    upload: `<path d="M8 11V3M4.8 6.2 8 3l3.2 3.2M3 11.5v1.7h10v-1.7"/>`,
     cart: `<path d="M1.8 2.5h2l1.6 7.6h7.3l1.5-5.4H4.6"/><circle cx="6.2" cy="13" r="1"/><circle cx="12" cy="13" r="1"/>`,
     play: `<circle cx="8" cy="8" r="5.8"/><path d="M6.7 5.6v4.8L10.6 8z" fill="currentColor" stroke="none"/>`,
     person: `<circle cx="8" cy="5.4" r="2.6"/><path d="M2.8 13.6c.7-2.5 2.7-3.9 5.2-3.9s4.5 1.4 5.2 3.9"/>`,
@@ -1208,7 +1307,7 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
 
   function renderList() {
     const el = $("#list");
-    $("#add-top").hidden = !S.db;
+    $("#add-top").hidden = !S.db || S.view === "house";
     $("#sort-label").textContent = SORT_LABEL[S.sort];
     $("#sort-menu").innerHTML = Object.keys(SORT_LABEL).map((k) => `<button type="button" role="menuitemradio" data-sort="${k}" aria-checked="${k === S.sort}">
       <span class="sm-check">${ICON_CHECK}</span><span><span class="sm-t">${SORT_LABEL[k]}</span><span class="sm-d">${SORT_HINT[k]}</span></span></button>`).join("");
@@ -1954,6 +2053,12 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   document.addEventListener("click", (ev) => {
     const t = ev.target;
     if (t.closest("[data-pf]") && S.edit) { S.pfOpen = !S.pfOpen; renderSheet(); const b = $("[data-pf]"); if (b) b.focus({ preventScroll: true }); return; }
+    if (t.closest("[data-house-go]")) { if (S.db) goHouse(); return; }
+    if (t.closest("[data-house-back]")) return leaveHouse();
+    const dd = t.closest("[data-docdel]");
+    if (dd) return deleteDoc(dd.dataset.docdel);
+    const da = t.closest("[data-doc]");
+    if (da && da.getAttribute("aria-disabled") === "true") { ev.preventDefault(); return; }
     if (t.closest("#proj-btn")) return setProjMenu($("#proj-menu").hidden);
     const pj = t.closest("[data-proj]");
     if (pj) { setProjMenu(false); if (pj.dataset.proj !== S.projectId) switchProject(pj.dataset.proj); return; }
@@ -2232,6 +2337,191 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
   $("#menu-backdrop").addEventListener("wheel", (e) => e.preventDefault(), { passive: false });
   $("#menu-backdrop").addEventListener("touchmove", (e) => e.preventDefault(), { passive: false });
 
+  // ---------- Villa el mansion: house info page (#hus) ----------
+  const MONTHS = ["jan.", "feb.", "mars", "apr.", "mai", "juni", "juli", "aug.", "sep.", "okt.", "nov.", "des."];
+  const ym = (s) => { const m = /^(\d{4})-(\d{2})/.exec(s || ""); return m ? `${MONTHS[+m[2] - 1]} ${m[1]}` : s || ""; };
+  const mill = (v) => (v / 1e6).toLocaleString("nb-NO", { maximumFractionDigits: 2 }) + " mill.";
+  const fileSize = (b) => (b > 1e6 ? (b / 1e6).toLocaleString("nb-NO", { maximumFractionDigits: 1 }) + " MB" : Math.max(1, Math.round(b / 1e3)) + " kB");
+  function goHouse() { setProjMenu(false); location.hash = "hus"; }
+  function leaveHouse() {
+    if (S.cameFromApp) history.back();
+    else { history.replaceState(null, "", location.pathname + location.search); route(); }
+  }
+  function route() {
+    const house = location.hash === "#hus";
+    S.view = house ? "house" : "app";
+    if (!S.started || !S.db) return;
+    $("#app").hidden = house;
+    $("#house-view").hidden = !house;
+    $("#add-top").hidden = house || !S.db;
+    $("#mini-title").textContent = house ? "Villa el mansion" : currentProject().name;
+    document.title = house ? "Villa el mansion" : `${currentProject().name} · Villa el mansion`;
+    if (house) renderHouse(); else renderList();
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", () => { if (location.hash === "#hus") S.cameFromApp = true; route(); });
+
+  function renderHouse() {
+    const el = $("#house-view");
+    const back = `<button type="button" class="back-link" data-house-back><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 2.5 4.5 8l5.5 5.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Prosjekter</button>`;
+    const h = S.house;
+    if (!S.loaded) { el.innerHTML = `${back}<div class="group state"><div class="spinner" aria-hidden="true"></div><p>Henter husinfo …</p></div>`; return; }
+    if (!h || !h.address) {
+      el.innerHTML = `${back}<section class="hero"><h1 id="house-title">Villa el mansion</h1></section>
+        <div class="group state"><h3>Husinfo er ikke lagt inn ennå</h3><p>Kjør oppsettfilen «villa-el-mansion-oppsett.sql» i Supabase (SQL Editor → New query → Run), og last inn siden på nytt.</p></div>
+        ${docsHtml(h)}`;
+      hydrateDocs(); return;
+    }
+    el.innerHTML = `${back}
+      <section class="hero house-hero">
+        <h1 id="house-title">${esc(h.name || "Villa el mansion")}</h1>
+        <p class="h-addr">${esc(h.address)}, ${esc(h.postal || "")} · ${esc(h.matrikkel || "")}</p>
+        ${h.summary ? `<p class="h-summary">${esc(h.summary)}</p>` : ""}
+      </section>
+      ${valueHtml(h)}
+      ${factsHtml(h)}
+      ${floorsHtml(h)}
+      ${conditionHtml(h)}
+      ${listCard("Bygg og tekniske anlegg", "Slik huset var ved kjøp, ifølge tilstandsrapporten.", h.systems)}
+      ${listCard("Forhold og kostnader", "", h.conditions)}
+      ${docsHtml(h)}
+      ${h.sources ? `<p class="h-source">Kilder: ${esc(h.sources)}</p>` : ""}`;
+    hydrateDocs();
+  }
+
+  function valueHtml(h) {
+    const vals = (h.values || []).filter((v) => num(v.amount) != null);
+    if (!vals.length) return "";
+    const last = vals[vals.length - 1];
+    const bought = vals.find((v) => /kjøp/i.test(v.label));
+    const max = Math.max(...vals.map((v) => v.amount));
+    const delta = bought && bought !== last ? last.amount - bought.amount : null;
+    const v = h.valuation || {};
+    return `<section class="hcard" aria-labelledby="hv-t">
+      <div class="k"><span class="k-ic t-tint">${ic("cash")}</span><span id="hv-t">Verdi</span></div>
+      <div class="hv-big">${nf.format(last.amount)} kr</div>
+      <div class="hv-sub">${esc(last.label)} ${ym(last.date)}${delta != null ? ` · <span class="hv-delta${delta < 0 ? " neg" : ""}">${delta >= 0 ? "+" : "−"}${nf.format(Math.abs(delta))} kr (${delta >= 0 ? "+" : "−"}${Math.round(Math.abs(delta) / bought.amount * 100)} %) siden kjøp</span>` : ""}</div>
+      <div class="vchart" role="img" aria-label="${esc(vals.map((x) => `${x.label} ${ym(x.date)}: ${nf.format(x.amount)} kr`).join(". "))}">
+        ${vals.map((x, i) => `<div class="vcol${i === vals.length - 1 ? " last" : ""}" tabindex="0">
+          <span class="vtrack"><span class="vval">${mill(x.amount)}</span><span class="vbar" style="--p:${Math.max(0.03, x.amount / max)}"></span></span>
+          <span class="vlab">${esc(x.label)}<br><span>${ym(x.date)}</span></span>
+          <span class="vtip">${nf.format(x.amount)} kr${x.note ? ` · ${esc(x.note)}` : ""}</span>
+        </div>`).join("")}
+      </div>
+      ${v.text ? `<p class="hv-quote">«${esc(v.text)}» <span>${esc(v.by || "Megler")}, ${ym(v.date)}</span></p>` : ""}
+      ${(v.comparables || []).length ? `<details class="hdetails"><summary>Sammenlignbare salg i nærområdet</summary>
+        <ul class="comp">${v.comparables.map((c) => `<li><span class="c-a">${esc(c.address)}</span><span class="c-m">${ym(c.date)} · ${c.area} m² · bygget ${c.built}</span><span class="c-p">${nf.format(c.price)} kr</span></li>`).join("")}</ul></details>` : ""}
+    </section>`;
+  }
+
+  function factsHtml(h) {
+    if (!(h.facts || []).length) return "";
+    return `<h2 class="sec-title h-sec">Nøkkelinfo</h2><div class="hfacts">${h.facts.map((f) => `<div class="hfact">
+      <span class="fact-k">${IC_PATHS[f.icon] ? ic(f.icon) : ""}${esc(f.label)}</span>
+      <span class="fact-v">${esc(f.value)}</span>${f.sub ? `<span class="fact-s">${esc(f.sub)}</span>` : ""}</div>`).join("")}</div>`;
+  }
+
+  function floorsHtml(h) {
+    const fl = h.floors || [];
+    if (!fl.length) return "";
+    const max = Math.max(...fl.map((f) => (f.bra || 0) + (f.outdoor || 0)), 1);
+    const sumIn = fl.reduce((s, f) => s + (f.bra || 0), 0), sumOut = fl.reduce((s, f) => s + (f.outdoor || 0), 0);
+    return `<h2 class="sec-title h-sec">Arealer per etasje</h2><section class="hcard floors">
+      <div class="fl-legend"><span><i class="lg lg-spent"></i>Innvendig (BRA-i)</span><span><i class="lg lg-range"></i>Terrasse/balkong</span></div>
+      ${fl.map((f) => `<div class="fl">
+        <div class="fl-top"><span class="fl-n">${esc(f.name)}</span><span class="fl-v">${f.bra} m²${f.outdoor ? ` <span>+ ${f.outdoor} m² ${esc(f.outdoorLabel || "ute")}</span>` : ""}</span></div>
+        <div class="fl-bar" aria-hidden="true"><span class="fl-in" style="width:${(f.bra / max) * 100}%"></span>${f.outdoor ? `<span class="fl-out" style="width:${(f.outdoor / max) * 100}%"></span>` : ""}</div>
+        ${f.rooms ? `<p class="fl-r">${esc(f.rooms)}</p>` : ""}
+      </div>`).join("")}
+      <p class="fl-sum">Totalt ${sumIn} m² innvendig${sumOut ? ` og ${sumOut} m² terrasse og balkong` : ""}. I tillegg garasje med bod.</p>
+    </section>`;
+  }
+
+  function conditionHtml(h) {
+    const tg3 = h.tg3 || [], tg2 = h.tg2 || [];
+    if (!tg3.length && !tg2.length) return "";
+    const lo = tg3.reduce((s, t) => s + (t.costMin || 0), 0), hi = tg3.reduce((s, t) => s + (t.costMax || 0), 0);
+    return `<h2 class="sec-title h-sec">Tilstand ved kjøp</h2><section class="hcard tg">
+      <div class="tg-head">
+        ${tg3.length ? `<span class="chip tg3c">${tg3.length} × TG3</span>` : ""}${tg2.length ? `<span class="chip tg2c">${tg2.length} × TG2</span>` : ""}
+        <span class="tg-src">Tilstandsrapport, des. 2024</span>
+      </div>
+      ${tg3.length ? `<p class="tg-sum">Store eller alvorlige avvik (TG3), anslått utbedring <strong>${nf.format(lo)}–${nf.format(hi)} kr</strong>.</p>
+      <ul class="tg3-list">${tg3.map((t) => `<li><div class="tg3-top"><span class="tg3-p">${esc(t.part)}</span>${t.costMin ? `<span class="tg3-c">${kShort(t.costMin)}–${kShort(t.costMax)} k</span>` : ""}</div><p>${esc(t.text)}</p></li>`).join("")}</ul>` : ""}
+      ${tg2.length ? `<details class="hdetails"><summary>Vis ${tg2.length} avvik med TG2</summary><ul class="tg2-list">${tg2.map((t) => `<li>${esc(t)}</li>`).join("")}</ul></details>` : ""}
+    </section>`;
+  }
+
+  function listCard(title, sub, items) {
+    if (!(items || []).length) return "";
+    return `<h2 class="sec-title h-sec">${esc(title)}</h2>${sub ? `<p class="sec-note h-subnote">${esc(sub)}</p>` : ""}
+      <div class="cells hlist">${items.map((it) => `<div class="cell stack"><span class="cell-label">${esc(it.label)}</span><span class="hl-t">${esc(it.text)}</span></div>`).join("")}</div>`;
+  }
+
+  function docsHtml(h) {
+    const docs = (h && h.docs) || [];
+    const busy = S.docBusy || 0;
+    return `<h2 class="sec-title h-sec">Dokumenter</h2>
+      <div class="docs">
+        ${docs.map((d) => `<div class="lk doc">
+          <a class="lk-main" data-doc="${esc(d.id)}" href="#" target="_blank" rel="noopener" aria-disabled="true">
+            <span class="lk-ic t-high">${ic("doc")}</span>
+            <span class="lk-body"><span class="lk-t">${esc(d.name)}</span><span class="lk-d">${d.size ? fileSize(d.size) + " · " : ""}lagt til ${d.addedAt ? new Date(d.addedAt).toLocaleDateString("nb-NO", { day: "numeric", month: "short", year: "numeric" }) : ""}</span></span>
+            <svg class="lk-out" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5H3.5v9h9V10M9 3.5h3.5V7M12.3 3.7 7.5 8.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <button type="button" class="lk-more" data-docdel="${esc(d.id)}" aria-label="Slett ${esc(d.name)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.8 4.2h10.4M6.3 4.2V2.8h3.4v1.4M4.2 4.2l.6 9h6.4l.6-9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>`).join("")}
+        ${Array.from({ length: busy }, () => `<div class="lk doc busy"><div class="lk-main"><span class="spinner" style="margin:0 6px"></span><span class="lk-body"><span class="lk-t">Laster opp …</span></span></div></div>`).join("")}
+        <label class="lk-add" for="f-doc">${ic("upload")}Last opp dokument<input id="f-doc" type="file" accept="application/pdf,image/jpeg,image/png,image/webp" multiple class="sr-only"></label>
+        ${S.docErr ? `<p class="err-msg" role="alert">${esc(S.docErr)}</p>` : ""}
+        ${!docs.length && !busy ? `<p class="sec-note" style="margin:6px 4px 0">Salgsoppgave, takster, tilbud og kvitteringer (PDF, maks 50 MB).</p>` : ""}
+      </div>`;
+  }
+  const docUrls = new Map();
+  async function hydrateDocs() {
+    const links = [...document.querySelectorAll("#house-view [data-doc]")];
+    if (!links.length || !sb) return;
+    const need = links.map((a) => a.dataset.doc).filter((p) => { const c = docUrls.get(p); return !c || c.exp < Date.now(); });
+    if (need.length) {
+      const { data } = await sb.storage.from("docs").createSignedUrls(need, 3600);
+      (data || []).forEach((d) => { if (d && d.signedUrl && d.path) docUrls.set(d.path, { url: d.signedUrl, exp: Date.now() + 55 * 60 * 1000 }); });
+    }
+    links.forEach((a) => { const c = docUrls.get(a.dataset.doc); if (c) { a.href = c.url; a.removeAttribute("aria-disabled"); } });
+  }
+  async function uploadDocs(files) {
+    S.docErr = "";
+    for (const file of files) {
+      if (file.size > 50 * 1024 * 1024) { S.docErr = `«${file.name}» er større enn 50 MB. Komprimer den først, eller del den opp.`; continue; }
+      S.docBusy = (S.docBusy || 0) + 1; renderHouse();
+      const ext = ((file.name.split(".").pop() || "pdf").toLowerCase().replace(/[^a-z0-9]/g, "")) || "pdf";
+      const path = `house/${crypto.randomUUID()}.${ext}`;
+      const { error } = await sb.storage.from("docs").upload(path, file, { contentType: file.type || "application/pdf", upsert: false });
+      S.docBusy--;
+      if (error) {
+        const m = String(error.message || "");
+        S.docErr = /bucket/i.test(m) && /not found/i.test(m) ? "Dokumentlageret finnes ikke ennå. Kjør oppsettfilen i Supabase først."
+          : /size|large|exceed/i.test(m) ? `«${file.name}» er for stor.` : /mime|type/i.test(m) ? `Filtypen til «${file.name}» støttes ikke. Bruk PDF eller bilde.` : "Opplastingen feilet: " + m;
+        continue;
+      }
+      const h = S.house || { kind: "house", name: "Villa el mansion", docs: [] };
+      h.docs = Array.isArray(h.docs) ? h.docs : [];
+      h.docs.push({ id: path, name: file.name.replace(/\.[^.]+$/, ""), size: file.size, type: file.type, addedAt: new Date().toISOString() });
+      S.house = h;
+      persist("house", clone(h));
+    }
+    renderHouse();
+  }
+  function deleteDoc(id) {
+    const h = S.house; if (!h) return;
+    const d = (h.docs || []).find((x) => x.id === id); if (!d) return;
+    openConfirm({ title: "Slette dokumentet?", desc: `«${d.name}» slettes for godt. Dette kan ikke angres.`, confirm: "Slett dokument", onConfirm: async () => {
+      h.docs = h.docs.filter((x) => x.id !== id);
+      persist("house", clone(h)); renderHouse();
+      try { await sb.storage.from("docs").remove([id]); } catch {}
+    } });
+  }
+  document.addEventListener("change", (ev) => { if (ev.target.id === "f-doc") { const fs = [...ev.target.files]; ev.target.value = ""; if (fs.length) uploadDocs(fs); } });
+
   // ---------- projects (all under Villa el mansion) ----------
   function projectList() {
     const arr = [...S.projects.values()];
@@ -2255,14 +2545,13 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     if (S.edit) S.tasks.set(S.edit.id, clone(S.edit)); // keep local edits for the open task
     const p = currentProject();
     $("#proj-title").textContent = p.name;
-    $("#mini-title").textContent = p.name;
-    document.title = `${p.name} · Villa el mansion`;
+    if (S.view !== "house") { $("#mini-title").textContent = p.name; document.title = `${p.name} · Villa el mansion`; }
     if (!$("#proj-menu").hidden) renderProjMenu();
   }
   function renderProjMenu() {
     const counts = {};
     S.allTasks.forEach((t) => { counts[t.project] = (counts[t.project] || 0) + 1; });
-    $("#proj-menu").innerHTML = `<div class="fm-head">Prosjekter i Villa el mansion</div>` +
+    $("#proj-menu").innerHTML = `<button type="button" class="pm-house" data-house-go><span class="pm-row"><span class="emoji pm-ic" aria-hidden="true">🏡</span><span class="sm-t">Om Villa el mansion</span><svg class="pm-chev" viewBox="0 0 8 14" aria-hidden="true"><path d="m1.5 1.5 5 5.5-5 5.5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="fm-head">Prosjekter</div>` +
       projectList().map((p) => `<button type="button" role="menuitemradio" data-proj="${esc(p.id)}" aria-checked="${p.id === S.projectId}">
         <span class="sm-check">${ICON_CHECK}</span><span class="pm-row"><span class="emoji pm-ic" aria-hidden="true">${esc(p.icon)}</span><span class="sm-t">${esc(p.name)}</span><span class="fm-n">${counts[p.id] || 0}</span></span></button>`).join("") +
       `<div class="fm-foot pm-foot">${S.projForm
@@ -2542,12 +2831,13 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     }
     S.db = makeDb();
     S.assets = makeAssets();
-    renderList();
+    route();
     const timer = setTimeout(() => { if (!S.loaded) { S.slow = true; renderList(); } }, 10000);
     S.db.collection("tasks").onSnapshot((snap) => {
       S.allTasks = new Map(); S.projects = new Map();
       snap.docs.forEach((d) => {
         const data = d.data() || {};
+        if (data.kind === "house") { S.house = clone(data); return; }
         if (data.kind === "project") S.projects.set(d.id, { id: d.id, name: data.name || "Uten navn", icon: data.icon || "🏠", createdAt: data.createdAt || "" });
         else S.allTasks.set(d.id, normalize(d.id, data));
       });
@@ -2556,7 +2846,8 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
       if (!snap.metadata.fromCache) ensureProjects();
       applyProject();
       S.loaded = true; S.slow = false; clearTimeout(timer);
-      if (!S.open) renderList(); else renderStats();
+      if (S.view === "house") renderHouse();
+      else if (!S.open) renderList(); else renderStats();
     }, () => {
       clearTimeout(timer);
       S.fatal = "Kunne ikke hente oppgavene. Sjekk nettforbindelsen og last inn siden på nytt.";
