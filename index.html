@@ -2531,7 +2531,9 @@ main.wrap { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
     const list = h.renovations || [];
     if (!list.length) return "";
     const busyAll = S.housePhotoBusy || {};
-    return `<h2 class="sec-title h-sec">Utført oppussing</h2>${list.map((r) => {
+    const total = list.reduce((t, r) => t + (num(r.cost) || 0), 0);
+    const approx = list.some((r) => r.costApprox);
+    return `<h2 class="sec-title h-sec">Utført oppussing</h2>${list.length > 1 && total ? `<p class="sec-note h-subnote">${list.length} jobber, totalt ${approx ? "ca. " : ""}${nf.format(total)} kr</p>` : ""}${list.map((r) => {
       const photos = ((h.photos || {})[r.id]) || [];
       const busy = busyAll[r.id] || 0;
       const months = h.rental && num(h.rental.rent) && r.cost && r.area && h.rental.unit === r.area ? r.cost / h.rental.rent : null;
